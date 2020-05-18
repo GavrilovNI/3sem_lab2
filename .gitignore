@@ -1,3 +1,11 @@
+# Other
+VS_project/.vs/VS_project/v16/ipch
+VS_project/Debug
+VS_project/GTest_project/Debug
+**.log
+**.tlog
+**.txt
+
 # Prerequisites
 *.d
 
