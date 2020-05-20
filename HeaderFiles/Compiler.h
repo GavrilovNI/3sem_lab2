@@ -2,6 +2,7 @@
 #include<string>
 #include<list>
 #include "TextSplitter.h"
+#include "Postfix.h"
 #include "Var.h"
 #include <map>
 #include <algorithm>
@@ -313,6 +314,7 @@ public:
 		while (first != nullptr)
 		{
 			Part* delPart = first;
+			
 			if (first->nextInside == nullptr)
 			{
 				first = first->next;

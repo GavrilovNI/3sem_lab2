@@ -1,19 +1,21 @@
 #pragma once
 #include <string>
 
-enum Type
+enum Class
 {
 	_int, _double, _bool, _string, const_int, const_double, const_bool, const_string, count
 };
 
 class Var
 {
+protected:
+	Class type;
 public:
 	static Var* Assign(std::string v);
-	Type type;
+	Class GetType();
 };
 
-class _Int : Var
+class _Int : public Var
 {
 public:
 	int value;

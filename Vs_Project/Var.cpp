@@ -46,3 +46,8 @@ Var* Var::Assign(std::string v)
 		throw "what a twist!";
 	}
 }
+
+Class Var::GetType()
+{
+	return type;
+}
