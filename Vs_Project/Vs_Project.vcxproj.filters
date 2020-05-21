@@ -27,6 +27,9 @@
     <ClInclude Include="..\HeaderFiles\Compiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\HeaderFiles\Part.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SourceFiles\Postfix.cpp">

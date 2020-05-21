@@ -6,16 +6,8 @@
 #include "Var.h"
 #include <map>
 #include <algorithm>
+#include "Part.h"
 
-struct Part
-{
-	std::string str;
-	Part* next;
-	Part* nextInside;
-
-	Part* prev;
-	Part* prevInside;
-};
 
 
 class Compiler
@@ -269,6 +261,11 @@ private:
 			if (first->nextInside == nullptr)
 			{
 				throw "compilation error";
+			}
+			else
+			{
+				//TODO
+				Postfix::CheckOnCompile(first, vars);
 			}
 		}
 		else if (first->str == "if")

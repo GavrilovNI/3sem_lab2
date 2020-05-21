@@ -1,9 +1,10 @@
 #pragma once
 #include "Var.h"
-#include "Compiler.h"
+//#include "Compiler.h"
 #include <map>
 #include <list>
-struct Part;
+
+#include "Part.h"
 
 using namespace std;
 
