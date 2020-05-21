@@ -41,7 +41,7 @@ Var* Var::Assign(std::string v)
 		_Int* temp = new _Int(stoi(v));
 		return (Var*)temp;
 	}
-	catch (int)
+	catch (...)
 	{
 		throw "what a twist!";
 	}

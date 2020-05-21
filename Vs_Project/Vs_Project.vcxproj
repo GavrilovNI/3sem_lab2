@@ -143,6 +143,7 @@
     <ClInclude Include="..\HeaderFiles\Postfix.h" />
     <ClInclude Include="..\HeaderFiles\TextSplitter.h" />
     <ClInclude Include="..\HeaderFiles\Var.h" />
+    <ClInclude Include="Part.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SourceFiles\Postfix.cpp" />
