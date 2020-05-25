@@ -1,8 +1,8 @@
-Program Summa;
+﻿Program Summa;
 
 Const
   A = 23;
-  B = (76*(2-1)+1);
+  B = -(+76*(2-1)-1.0);
 
 var
   X: char;

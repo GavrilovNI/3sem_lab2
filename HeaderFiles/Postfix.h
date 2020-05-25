@@ -1,6 +1,5 @@
 #pragma once
 #include "Var.h"
-//#include "Compiler.h"
 #include <map>
 #include <list>
 
@@ -8,20 +7,22 @@
 
 using namespace std;
 
-inline multimap<string, pair<Class, Class>> posoperations;
+inline multimap<string, pair<_Type, _Type>> posoperations;
+
 static class Postfix
 {
 private:
-	static list<string> ToList(Part* part);
+	static list<string> ToList(Part* part); //convert to list operands
 public:
 
-	static bool IsOperator(string sym);
-	static bool BalanceBracket(list<string> list);
+	static bool IsOperator(string sym); 
+	static bool BalanceBracket(list<string> prefix); //bracket validation
+	static bool CheckOnCorrect(list<string> prefix); //expression validation
 	static int PriorityOperator(string s);
-
-	static void SetOperations();
-	static list<string> ToPostfix(list<string> prefix);
-	static bool CheckOnCompile(Part* part, std::map<std::string, Var*> vars);
+	
+	static void SetOperations();	//set possible operations
+	static list<string> ToPostfix(list<string> prefix); //convert to postfix
+	static Var* CheckOnCompile(Part* part, std::map<std::string, Var*> vars);
 	static Var* Calculate(Part* part, std::map<std::string, Var*> vars);
 };
 

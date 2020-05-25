@@ -265,7 +265,8 @@ private:
 			else
 			{
 				//TODO
-				Postfix::CheckOnCompile(first, vars);
+				Var* var = Postfix::CheckOnCompile(first, vars);
+				int x = 5 - 6;
 			}
 		}
 		else if (first->str == "if")

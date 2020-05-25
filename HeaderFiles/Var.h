@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-enum Class
+enum  _Type
 {
 	_int, _double, _bool, _string, const_int, const_double, const_bool, const_string, count
 };
@@ -9,10 +9,15 @@ enum Class
 class Var
 {
 protected:
-	Class type;
+	_Type type;
 public:
+	//convert to constructor!
+	void SetType(_Type t)
+	{
+		type = t;
+	}
 	static Var* Assign(std::string v);
-	Class GetType();
+	_Type GetType();
 };
 
 class _Int : public Var
