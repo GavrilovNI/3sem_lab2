@@ -47,7 +47,7 @@ Var* Var::Assign(std::string v)
 	}
 }
 
-Class Var::GetType()
+_Type Var::GetType()
 {
 	return type;
 }
