@@ -61,9 +61,18 @@ Var::_Type Var::GetType()
 	return _type;
 }
 
-Var::_Type Var::GetTypeByString(std::string)
+Var::_Type Var::GetTypeByString(std::string varName)
 {
+	if (varName == "integer")
+		return _Type::_int;
+	if (varName == "double")
+		return _Type::_double;
+	if (varName == "boolean")
+		return _Type::_bool;
+	if (varName == "string")
+		return _Type::_string;
 
+	throw "unidentified type";
 }
 
 _Int::_Int(int v)

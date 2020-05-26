@@ -6,7 +6,7 @@ class Var
 public:
 	enum class _Type
 	{
-		_int, _double, _bool, _string, const_int, const_double, const_bool, const_string, _void
+		_int, _double, _bool, _string, _void
 	};
 
 	static Var* Assign(std::string v);
