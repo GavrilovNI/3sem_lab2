@@ -7,12 +7,12 @@
 
 using namespace std;
 
-inline multimap<string, pair<_Type, _Type>> posoperations;
+inline multimap<string, pair<Var::_Type, Var::_Type>> posoperations;
 
 static class Postfix
 {
 private:
-	static list<string> ToList(Part* part); //convert to list operands
+	static list<string> ToList(Part* start, Part* end); //convert to list operands
 public:
 
 	static bool IsOperator(string sym); 
@@ -22,7 +22,7 @@ public:
 	
 	static void SetOperations();	//set possible operations
 	static list<string> ToPostfix(list<string> prefix); //convert to postfix
-	static Var* CheckOnCompile(Part* part, std::map<std::string, Var*> vars);
-	static Var* Calculate(Part* part, std::map<std::string, Var*> vars);
+	static Var::_Type CheckOnCompile(Part* start, Part* end, std::map<std::string, std::pair<Var::_Type, bool>> vars);
+	static Var* Calculate(Part* start, Part* end, std::map<std::string, pair<Var, bool>> vars);
 };
 
