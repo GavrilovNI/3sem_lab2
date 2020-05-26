@@ -272,6 +272,7 @@ private:
 		}
 		else if (first->str == "if")
 		{
+			Var::_Type x = Postfix::CheckOnCompile(first->nextInside, first->next, vars);
 			if (first->next->str != "then")
 			{
 				throw "compilation error";

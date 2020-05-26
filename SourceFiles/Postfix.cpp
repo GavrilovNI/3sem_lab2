@@ -58,11 +58,19 @@ list<string> Postfix::ToList(Part* start, Part* end)
 
 bool Postfix::IsOperator(string sym)
 {
-	if ((sym == "+") || (sym == "-") || (sym == "*") || (sym == "/"))
-	{
-		return true;
-	}
-	return false;
+	list<string> operations{
+	"*",
+	"/",
+	"+",
+	"-",
+	"<>",
+	"=",
+	">",
+	">=",
+	"<",
+	"<="
+	};
+	return (find(operations.begin(), operations.end(), sym) != operations.end());
 }
 
 bool Postfix::BalanceBracket(list<string> prefix)
@@ -123,7 +131,7 @@ bool Postfix::CheckOnCorrect(list<string> prefix)
 	auto itNext = it;
 	++itNext;
 	auto itPrev = it;
-	if ((*it == "*") || (*it == "/"))
+	if (IsOperator(*it) && *it != "+" && *it != "-") 
 		return false;
 	if (!BalanceBracket(prefix))
 		return false;
@@ -162,7 +170,10 @@ bool Postfix::CheckOnCorrect(list<string> prefix)
 
 int Postfix::PriorityOperator(string s)
 {
-	if (s == "(")
+	if ((s == "=") || (s == "<>") || (s == "<") || (s == ">") || (s == "<=") || (s == ">="))
+	{
+		return -1;
+	} else if (s == "(")
 	{
 		return 0;
 	}
@@ -198,6 +209,49 @@ void Postfix::SetOperations()
 	posoperations.insert(make_pair("*", make_pair(Var::_Type::_double, Var::_Type::_double)));
 	posoperations.insert(make_pair("/", make_pair(Var::_Type::_double, Var::_Type::_double)));
 	posoperations.insert(make_pair("+", make_pair(Var::_Type::_string, Var::_Type::_string)));
+
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("=", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("<>", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("<", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("<=", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair(">=", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair(">", make_pair(Var::_Type::_int, Var::_Type::_double)));
+
 }
 
 list<string> Postfix::ToPostfix(list<string> prefix)
@@ -324,6 +378,10 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 					if (Oper1 == Var::_Type::_double || Oper2 == Var::_Type::_double)
 					{
 						tmp = Var::_Type::_double;
+					}
+					else if (*it != "+" && *it != "-" && *it != "*" && *it != "/")
+					{
+						tmp = Var::_Type::_bool;
 					}
 					else
 					{
