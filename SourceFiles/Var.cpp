@@ -14,7 +14,7 @@ Var* Var::Assign(string v)
 		}
 		else
 		{
-			throw "what a twist!";
+			throw "unpair apostrophe";
 		}
 
 		_String* temp = new _String(v);
@@ -32,26 +32,38 @@ Var* Var::Assign(string v)
 		return (Var*)temp;
 	}
 
-	try
+	int count = 0;
+	for (int i = 0; i < v.length(); i++)
 	{
-		if (v.find('.', 1) != -1)
+		if ((v[i] == '\'') && (v.substr(i, 1) == "'"))
 		{
-			_Double* temp = new _Double(stod(v));
-			return (Var*)temp;
+			count++;
 		}
+	}
 
-		_Int* temp = new _Int(stoi(v));
+	if ((count == 1) && (v.back() != '\''))
+	{
+		_Double* temp = new _Double(stod(v));
 		return (Var*)temp;
 	}
-	catch (int)
+
+	for (int i = 0; i < v.length(); i++)
 	{
-		throw "what a twist!";
+		if ((v[i] < '0') || (v[i] > '9'))
+			throw "unidentified symbol - '" + v.substr(i, 1) + "'";
 	}
+	_Int* temp = new _Int(stoi(v));
+	return (Var*)temp;
 }
 
-_Type Var::GetType()
+Var::_Type Var::GetType()
 {
 	return _type;
+}
+
+Var::_Type Var::GetTypeByString(std::string)
+{
+
 }
 
 _Int::_Int(int v)
@@ -67,6 +79,12 @@ _Int::_Int()
 }
 
 _Double::_Double(double v)
+{
+	value = v;
+	_type = _Type::_double;
+}
+
+_Double::_Double(int v)
 {
 	value = v;
 	_type = _Type::_double;
