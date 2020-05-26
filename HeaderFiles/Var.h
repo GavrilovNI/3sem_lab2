@@ -1,39 +1,57 @@
 #pragma once
 #include <string>
 
-enum  _Type
-{
-	_int, _double, _bool, _string, const_int, const_double, const_bool, const_string, count
-};
-
 class Var
 {
-protected:
-	_Type type;
 public:
-	//convert to constructor!
-	void SetType(_Type t)
+	enum class _Type
 	{
-		type = t;
-	}
+		_int, _double, _bool, _string, _void
+	};
+
 	static Var* Assign(std::string v);
 	_Type GetType();
+	static _Type GetTypeByString(std::string);
+
+protected:
+	_Type _type;
 };
 
-class _Int : public Var
+class _Int : Var
 {
 public:
 	int value;
-	_Int(int v)
+
+	_Int(int v);
+	_Int();
+
+
+	_Int operator+ (_Int v)
 	{
-		value = v;
-		type = _int;
+		return _Int(this->value + v.value);
 	}
-	_Int()
+
+	_Int operator- (_Int v)
 	{
-		value = 0;
-		type = _int;
+		return _Int(this->value - v.value);
 	}
+
+	_Int operator* (_Int v)
+	{
+		return _Int(this->value * v.value);
+	}
+
+	_Int operator/ (_Int v)
+	{
+		return _Int(this->value / v.value);
+	}
+
+	_Int operator% (_Int v)
+	{
+		return _Int(this->value % v.value);
+	}
+
+
 	explicit operator int() const
 	{
 		return value;
@@ -54,36 +72,105 @@ class _Double : Var
 {
 public:
 	double value;
-	_Double(double v)
+
+	_Double(double v);
+	_Double(int v);
+	_Double();
+
+
+	_Double operator+ (_Double v)
 	{
-		value = v;
-		type = _double;
+		return _Double(this->value + v.value);
 	}
-	_Double()
+
+	_Double operator+ (_Int v)
 	{
-		value = .0;
-		type = _double;
+		return _Double(v.value + this->value);
 	}
+
+	_Double operator- (_Double v)
+	{
+		return _Double(this->value - v.value);
+	}
+
+	_Double operator- (_Int v)
+	{
+		return _Double(v.value - this->value);
+	}
+
+	_Double operator* (_Double v)
+	{
+		return _Double(this->value * v.value);
+	}
+
+	_Double operator* (_Int v)
+	{
+		return _Double(v.value * this->value);
+	}
+
+	_Double operator/ (_Double v)
+	{
+		return _Double(this->value / v.value);
+	}
+
+	_Double operator/ (_Int v)
+	{
+		return _Double(v.value / this->value);
+	}
+
+
 	explicit operator double() const
 	{
 		return value;
 	}
 };
+/*
+_Double operator+ (_Int v1, _Double v2)
+{
+	return _Double(v1.value + v2.value);
+}
+
+_Double operator- (_Int v1, _Double v2)
+{
+	return _Double(v1.value - v2.value);
+}
+
+_Double operator* (_Int v1, _Double v2)
+{
+	return _Double(v1.value * v2.value);
+}
+
+_Double operator/ (_Int v1, _Double v2)
+{
+	return _Double(v1.value / v2.value);
+}*/
 
 class _Bool : Var
 {
 public:
 	bool value;
-	_Bool(bool v)
+
+	_Bool(bool v);
+	_Bool(int v);
+	_Bool();
+
+
+	_Bool operator&& (_Bool v)
 	{
-		value = v;
-		type = _bool;
+		return _Bool(this->value && v.value);
 	}
-	_Bool()
+
+	_Bool operator|| (_Bool v)
 	{
-		value = false;
-		type = _bool;
+		return _Bool(this->value || v.value);
 	}
+
+	_Bool operator! ()
+	{
+		return _Bool(!(this->value));
+	}
+
+
 	explicit operator bool() const
 	{
 		return value;
@@ -100,16 +187,10 @@ class _String : Var
 {
 public:
 	std::string value;
-	_String(std::string v)
-	{
-		value = v;
-		type = _string;
-	}
-	_String()
-	{
-		value = ' ';
-		type = _string;
-	}
+
+	_String(std::string v);
+	_String();
+
 	explicit operator std::string() const
 	{
 		return value;
