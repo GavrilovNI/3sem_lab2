@@ -7,10 +7,10 @@
 part  = :=
 Var* Postfix(...);*/
 
-list<string> Postfix::ToList(Part* part)
+list<string> Postfix::ToList(Part* start, Part* end)
 {
 	list<string> tmp;
-	auto it = part;
+	auto it = start;
 	bool F = true;
 	if (it->str == "-")
 	{
@@ -22,7 +22,7 @@ list<string> Postfix::ToList(Part* part)
 	}
 	while (F)
 	{
-		if (it->str == ";")
+		if (it == end)
 		{
 			F = false;
 		}
@@ -183,21 +183,21 @@ int Postfix::PriorityOperator(string s)
 
 void Postfix::SetOperations()
 {
-	posoperations.insert(make_pair("+", make_pair(_int, _int)));
-	posoperations.insert(make_pair("+", make_pair(_int, _double)));
-	posoperations.insert(make_pair("+", make_pair(_double, _int)));
-	posoperations.insert(make_pair("+", make_pair(_double, _double)));
-	posoperations.insert(make_pair("+", make_pair(_string, _string)));
-	posoperations.insert(make_pair("-", make_pair(_int, _int)));
-	posoperations.insert(make_pair("-", make_pair(_int, _double)));
-	posoperations.insert(make_pair("-", make_pair(_double, _int)));
-	posoperations.insert(make_pair("-", make_pair(_double, _double)));
-	posoperations.insert(make_pair("*", make_pair(_int, _int)));
-	posoperations.insert(make_pair("*", make_pair(_int, _double)));
-	posoperations.insert(make_pair("*", make_pair(_double, _int)));
-	posoperations.insert(make_pair("*", make_pair(_double, _double)));
-	posoperations.insert(make_pair("/", make_pair(_double, _double)));
-	posoperations.insert(make_pair("+", make_pair(_string, _string)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(make_pair("-", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("-", make_pair(Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(make_pair("-", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("-", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("*", make_pair(Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(make_pair("*", make_pair(Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(make_pair("*", make_pair(Var::_Type::_double, Var::_Type::_int)));
+	posoperations.insert(make_pair("*", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("/", make_pair(Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("+", make_pair(Var::_Type::_string, Var::_Type::_string)));
 }
 
 list<string> Postfix::ToPostfix(list<string> prefix)
@@ -273,18 +273,15 @@ list<string> Postfix::ToPostfix(list<string> prefix)
 	return postfix;
 }
 
-Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
+Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string, std::pair<Var::_Type, bool>> vars)
 {
 	SetOperations();//Set possible operations  between types
 
 	list<string> prefix;
-	if (part->next->str != ";")
+
+	if (start != nullptr)
 	{
-		throw "expected \";\" ";
-	}
-	if (part->nextInside != nullptr)
-	{
-		prefix = ToList(part->nextInside);
+		prefix = ToList(start, end);
 	}
 	else
 	{
@@ -293,8 +290,8 @@ Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
 	//if there are no symbols in line after "=" or ":="
 	list<string> postfix = ToPostfix(prefix);
 
-	stack<_Type> tmpOperand;
-	_Type tmp;
+	stack<Var::_Type> tmpOperand;
+	Var::_Type tmp;
 	auto it = postfix.begin();
 	while ((it) != postfix.end())
 	{
@@ -302,7 +299,7 @@ Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
 		{
 			bool Oper1find = false;
 			bool Oper2find = false;
-			_Type Oper1, Oper2;
+			Var::_Type Oper1, Oper2;
 			if (!tmpOperand.empty())
 			{
 				Oper2 = tmpOperand.top(); 
@@ -322,11 +319,11 @@ Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
 			bool F = false;
 			for (auto itrMap = iterMap.first; itrMap != iterMap.second; ++itrMap)
 			{
-				if (itrMap->second == make_pair(static_cast<_Type>(Oper1 % 3), static_cast<_Type>(Oper2 % 3)))
+				if (itrMap->second == make_pair(static_cast<Var::_Type>(Oper1), static_cast<Var::_Type>(Oper2)))
 				{
-					if (Oper1 == _double || Oper2 == _double)
+					if (Oper1 == Var::_Type::_double || Oper2 == Var::_Type::_double)
 					{
-						tmp = _double;
+						tmp = Var::_Type::_double;
 					}
 					else
 					{
@@ -347,7 +344,7 @@ Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
 			auto v = vars.find(*it);
 			if (v != vars.end())
 			{
-				tmpOperand.push(v->second->GetType());
+				tmpOperand.push((v->second).first);
 			}
 			else
 			{
@@ -357,22 +354,23 @@ Var* Postfix::CheckOnCompile(Part* part, std::map<std::string, Var*> vars)
 		}
 		it++;
 	}
-	Var v;
+	Var::_Type var;
 	if (tmpOperand.size() == 1)
 	{
-		v.SetType(tmpOperand.top()); //TODO:: DELETE 
+		var = tmpOperand.top(); //TODO:: DELETE 
 		tmpOperand.pop();
 	}
 	else
 	{
 		throw "error compile";
 	}
-	return &v;
+	return var;
 }
+//Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, Var*> vars)
 
-Var* Postfix::Calculate(Part* part, std::map<std::string, Var*> vars)
+Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var, bool>> vars)
 {
-	list<string> prefix = ToList(part);
+	list<string> prefix = ToList(start, end);
 	//if there are no symbols in line after "=" or ":="
 	
 	list<string> postfix = ToPostfix(prefix);
@@ -425,7 +423,7 @@ Var* Postfix::Calculate(Part* part, std::map<std::string, Var*> vars)
 			auto v = vars.find(*it);
 			if (v != vars.end())
 			{
-				tmpOperand.push(v->second);
+				tmpOperand.push(&(v->second).first);
 			}
 			else
 			{

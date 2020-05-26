@@ -38,7 +38,7 @@
     <ClCompile Include="..\SourceFiles\Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Var.cpp">
+    <ClCompile Include="..\SourceFiles\Var.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

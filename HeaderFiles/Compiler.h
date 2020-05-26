@@ -13,7 +13,8 @@
 class Compiler
 {
 private:
-	std::map<std::string, Var*> vars;
+	//	std::map<std::string, Var*> vars;
+	std::map<std::string, pair<Var::_Type, bool>> vars;
 
 
 
@@ -265,8 +266,8 @@ private:
 			else
 			{
 				//TODO
-				Var* var = Postfix::CheckOnCompile(first, vars);
-				int x = 5 - 6;
+				Var::_Type x = Postfix::CheckOnCompile(first->nextInside, first->next, vars);
+				int y = 5 - 6;
 			}
 		}
 		else if (first->str == "if")
@@ -300,7 +301,8 @@ public:
 	{
 		
 
-		vars = std::map<std::string, Var*>();
+		//vars = std::map<std::string, Var*>();
+		vars = std::map<std::string, pair<Var::_Type, bool>>();
 
 		
 		Part* first = SplitStr(str);
@@ -324,10 +326,10 @@ public:
 			delete delPart;
 		}
 
-		for (auto const& [key, val] : vars)
+		/*for (auto const& [key, val] : vars)
 		{
 			delete val;
-		}
+		}*/
 	}
 
 

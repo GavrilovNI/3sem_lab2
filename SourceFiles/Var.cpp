@@ -1,4 +1,4 @@
-#include "Var.h"
+#include "../HeaderFiles/Var.h"
 
 using namespace std;
 
@@ -35,13 +35,15 @@ Var* Var::Assign(string v)
 	int count = 0;
 	for (int i = 0; i < v.length(); i++)
 	{
-		if ((v[i] == '\'') && (v.substr(i, 1) == "'"))
+		//if ((v[i] == '\'') && (v.substr(i, 1) == "'"))
+		if ((v[i] == '\'') && (v.substr(i, 1) == "'") || (v[i] == '.') && (v.substr(i, 1) == "."))
 		{
 			count++;
 		}
 	}
 
-	if ((count == 1) && (v.back() != '\''))
+	//if ((count == 1) && (v.back() != '\''))
+	if ((count == 1) && (v.find('.', 1) != -1))
 	{
 		_Double* temp = new _Double(stod(v));
 		return (Var*)temp;
