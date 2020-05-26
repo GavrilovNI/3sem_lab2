@@ -1,4 +1,4 @@
-#include "Function.h"
+#include "../HeaderFiles/Function.h"
 
 void Function::CheckOnCompile(std::string FuncName, std::list<std::pair<Var::_Type, bool>> argTypes)
 {

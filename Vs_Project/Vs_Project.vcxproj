@@ -140,12 +140,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\HeaderFiles\Compiler.h" />
+    <ClInclude Include="..\HeaderFiles\Function.h" />
     <ClInclude Include="..\HeaderFiles\Part.h" />
     <ClInclude Include="..\HeaderFiles\Postfix.h" />
     <ClInclude Include="..\HeaderFiles\TextSplitter.h" />
     <ClInclude Include="..\HeaderFiles\Var.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SourceFiles\Function.cpp" />
     <ClCompile Include="..\SourceFiles\Postfix.cpp" />
     <ClCompile Include="..\SourceFiles\Source.cpp" />
     <ClCompile Include="..\SourceFiles\Var.cpp" />
