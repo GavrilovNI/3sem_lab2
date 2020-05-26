@@ -1,12 +1,14 @@
-#include "../HeaderFiles/Var.h"
+#include "Var.h"
 
-Var* Var::Assign(std::string v)
+using namespace std;
+
+Var* Var::Assign(string v)
 {
 	if (v[0] == '\'')
 	{
 		v.erase(0, 1);
 		int f = 0;
-		if (((f = v.find("'", f)) != std::string::npos) && (v[f] == v.back()))
+		if (((f = v.find("'", f)) != string::npos) && (v[f] == v.back()))
 		{
 			v.erase(f, 1);
 		}
@@ -41,7 +43,7 @@ Var* Var::Assign(std::string v)
 		_Int* temp = new _Int(stoi(v));
 		return (Var*)temp;
 	}
-	catch (...)
+	catch (int)
 	{
 		throw "what a twist!";
 	}
@@ -49,5 +51,59 @@ Var* Var::Assign(std::string v)
 
 _Type Var::GetType()
 {
-	return type;
+	return _type;
+}
+
+_Int::_Int(int v)
+{
+	value = v;
+	_type = _Type::_int;
+}
+
+_Int::_Int()
+{
+	value = 0;
+	_type = _Type::_int;
+}
+
+_Double::_Double(double v)
+{
+	value = v;
+	_type = _Type::_double;
+}
+
+_Double::_Double()
+{
+	value = .0;
+	_type = _Type::_double;
+}
+
+_Bool::_Bool(bool v)
+{
+	value = v;
+	_type = _Type::_bool;
+}
+
+_Bool::_Bool(int v)
+{
+	value = v;
+	_type = _Type::_bool;
+}
+
+_Bool::_Bool()
+{
+	value = false;
+	_type = _Type::_bool;
+}
+
+_String::_String(std::string v)
+{
+	value = v;
+	_type = _Type::_string;
+}
+
+_String::_String()
+{
+	value = ' ';
+	_type = _Type::_string;
 }

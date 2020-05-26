@@ -1,39 +1,29 @@
 #pragma once
 #include <string>
 
-enum  _Type
+enum class _Type
 {
 	_int, _double, _bool, _string, const_int, const_double, const_bool, const_string, count
 };
 
 class Var
 {
-protected:
-	_Type type;
 public:
-	//convert to constructor!
-	void SetType(_Type t)
-	{
-		type = t;
-	}
 	static Var* Assign(std::string v);
 	_Type GetType();
+
+protected:
+	_Type _type;
 };
 
-class _Int : public Var
+class _Int : Var
 {
 public:
 	int value;
-	_Int(int v)
-	{
-		value = v;
-		type = _int;
-	}
-	_Int()
-	{
-		value = 0;
-		type = _int;
-	}
+
+	_Int(int v);
+	_Int();
+
 	explicit operator int() const
 	{
 		return value;
@@ -54,16 +44,10 @@ class _Double : Var
 {
 public:
 	double value;
-	_Double(double v)
-	{
-		value = v;
-		type = _double;
-	}
-	_Double()
-	{
-		value = .0;
-		type = _double;
-	}
+
+	_Double(double v);
+	_Double();
+
 	explicit operator double() const
 	{
 		return value;
@@ -74,16 +58,11 @@ class _Bool : Var
 {
 public:
 	bool value;
-	_Bool(bool v)
-	{
-		value = v;
-		type = _bool;
-	}
-	_Bool()
-	{
-		value = false;
-		type = _bool;
-	}
+
+	_Bool(bool v);
+	_Bool(int v);
+	_Bool();
+
 	explicit operator bool() const
 	{
 		return value;
@@ -100,16 +79,10 @@ class _String : Var
 {
 public:
 	std::string value;
-	_String(std::string v)
-	{
-		value = v;
-		type = _string;
-	}
-	_String()
-	{
-		value = ' ';
-		type = _string;
-	}
+
+	_String(std::string v);
+	_String();
+
 	explicit operator std::string() const
 	{
 		return value;
