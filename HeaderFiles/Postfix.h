@@ -25,6 +25,6 @@ public:
 	static void SetOperations();	//set possible operations
 	static list<string> ToPostfix(list<string> prefix); //convert to postfix
 	static Var::_Type CheckOnCompile(Part* start, Part* end, std::map<std::string, std::pair<Var::_Type, bool>> vars);
-	static Var* Calculate(Part* start, Part* end, std::map<std::string, pair<Var, bool>> vars);
+	static Var* Calculate(Part* start, Part* end, std::map<std::string, pair<Var*, bool>> vars);
 };
 

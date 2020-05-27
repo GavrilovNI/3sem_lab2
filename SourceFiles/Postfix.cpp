@@ -228,6 +228,8 @@ void Postfix::SetOperations()
 	posoperations.insert(make_pair("*", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
 
 	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
 	posoperations.insert(make_pair("mod", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
 	posoperations.insert(make_pair("div", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
 
@@ -444,16 +446,16 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 }
 //Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, Var*> vars)
 
-Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var, bool>> vars)
+Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*, bool>> vars)
 {
 	list<string> prefix = ToList(start, end);
 	//if there are no symbols in line after "=" or ":="
 	
 	list<string> postfix = ToPostfix(prefix);
-	string str = "";
+	//string str = "";
 	bool F = true;
 	stack<Var*> tmpOperand;
-	Var* tmp = nullptr;
+	Var* tmp;
 	auto it = postfix.begin();
 	while ((it) != postfix.end())
 	{
@@ -461,7 +463,7 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var, 
 		{
 			bool Oper1find = false;
 			bool Oper2find = false;
-			Var *Oper1, *Oper2;
+			Var *Oper1 = nullptr, *Oper2 = nullptr;
 			if (!tmpOperand.empty())
 			{
 				Oper2 = tmpOperand.top();
@@ -470,43 +472,98 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var, 
 			}
 			if (!tmpOperand.empty())
 			{
-				Oper1 = tmpOperand.top();
-				tmpOperand.pop();
+				if (*it != "not")
+				{
+					Oper1 = tmpOperand.top();
+					tmpOperand.pop();
+				}
 				Oper1find = true;
 			}
 			if (!(Oper1find && Oper2find))
 				throw "False";
 			if (*it == "+")
 			{
-				//tmp = Oper1 + Oper2;
+				tmp = *Oper1 + Oper2;
 			}
 			else if (*it == "-")
 			{
-				//tmp = Oper1 - Oper2;
+				tmp = *Oper1 - Oper2;
 			}
 			else if (*it == "*")
 			{
-				//tmp = Oper1 * Oper2;
+				tmp = *Oper1 * Oper2;
 			}
 			else if (*it == "/")
 			{
-				//tmp = Oper1 / Oper2;
+				tmp = *Oper1 / Oper2;
+			}
+			else if (*it == "<>")
+			{
+				tmp = *Oper1 != Oper2;
+			}
+			else if (*it == "=")
+			{
+				tmp = *Oper1 == Oper2;
+			}
+			else if (*it == ">")
+			{
+				tmp = *Oper1 > Oper2;
+			}
+			else if (*it == ">=")
+			{
+				tmp = *Oper1 >= Oper2;
+			}				
+			else if (*it == "<")
+			{
+				tmp = *Oper1 < Oper2;
+			}
+			else if (*it == "<=")
+			{
+				tmp = *Oper1 <= Oper2;
+			}
+			else if (*it == "and")
+			{
+				tmp = *Oper1 && Oper2;
+			}
+			else if (*it == "or")
+			{
+				tmp = *Oper1 || Oper2;
+
+			}
+			else if (*it == "not")
+			{
+				tmp = !(*Oper1);
+			}
+			else if (*it == "mod")
+			{
+				tmp = *Oper1 / Oper2;
+			}
+			else if (*it == "div")
+			{
+				tmp = *Oper1 % Oper2;
 			}
 			tmpOperand.push(tmp);
 		}
 		else
 		{
+			bool F = false;
 			auto v = vars.find(*it);
 			if (v != vars.end())
 			{
-				tmpOperand.push(&(v->second).first);
+				tmpOperand.push((v->second).first);
+				F = true;
 			}
 			else
 			{
 				tmpOperand.push(Var::Assign(*it));
+				F = true;
+			}
+			if (!F)
+			{
+				throw "error calculate";
 			}
 		}
 		it++;
 	}
-	return tmp;
+	return tmpOperand.top();
 }

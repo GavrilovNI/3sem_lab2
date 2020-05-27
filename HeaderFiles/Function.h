@@ -15,7 +15,7 @@ class Function
 {
 public:
     static void CheckOnCompile(std::string FuncName, std::list<std::pair<Var::_Type, bool>> argTypes);
-    static Var* Calculate(std::string FuncName, std::list<Var*> args);
+    static Var* Calculate(std::string FuncName, std::list<std::pair<Var*, bool>> args);
     static bool IsFuncName(std::string name);
 private:
 };
