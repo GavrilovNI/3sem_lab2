@@ -3,9 +3,6 @@
 #include <stack>
 #include <iostream>
 
-/*bool PostfixCheckOnCompile(Part* part, std::map<std::string, Var> vars);
-part  = :=
-Var* Postfix(...);*/
 
 list<string> Postfix::ToList(Part* start, Part* end)
 {
@@ -71,7 +68,9 @@ bool Postfix::IsOperator(string sym)
 	"<=",
 	"and",
 	"or",
-	"not"
+	"not",
+	"mod",
+	"div"
 	};
 	return (find(operations.begin(), operations.end(), sym) != operations.end());
 }
