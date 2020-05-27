@@ -18,12 +18,13 @@ public:
 	_Type GetType();
 	static _Type GetTypeByString(std::string);
 	static std::string GetTypeName(_Type);
+	static Var* CreateVarByType(_Type t);
 
 	//virtual Var operator+ (Var& v);
 
 	virtual std::string ToString()
 	{
-		throw "R";
+		throw "Error";
 	}
 
 	virtual Var* operator+ (Var*)
@@ -54,7 +55,35 @@ public:
 	{
 		throw "Error";
 	}
+	virtual Var* operator== (Var* v)
+	{
+		throw "Error";
+	}
+	virtual Var* operator!= (Var* v)
+	{
+		throw "Error";
+	}
+	virtual Var* operator< (Var* v)
+	{
+		throw "Error";
+	}
+	virtual Var* operator<= (Var* v)
+	{
+		throw "Error";
+	}
+	virtual Var* operator> (Var* v)
+	{
+		throw "Error";
+	}
+	virtual Var* operator>= (Var* v)
+	{
+		throw "Error";
+	}
 	virtual Var* operator! ()
+	{
+		throw "Error";
+	}
+	virtual Var* operator= (Var* v)
 	{
 		throw "Error";
 	}
@@ -81,7 +110,13 @@ public:
 	Var* operator* (Var* v) override;
 	Var* operator/ (Var* v) override;
 	Var* operator% (Var* v) override;
-
+	Var* operator== (Var* v) override;
+	Var* operator!= (Var* v) override;
+	Var* operator< (Var* v) override;
+	Var* operator<= (Var* v) override;
+	Var* operator> (Var* v) override;
+	Var* operator>= (Var* v) override;
+	Var* operator= (Var* v) override;
 
 
 	explicit operator int() const
@@ -113,7 +148,13 @@ public:
 	Var* operator- (Var* v) override;
 	Var* operator* (Var* v) override;
 	Var* operator/ (Var* v) override;
-
+	Var* operator== (Var* v) override;
+	Var* operator!= (Var* v) override;
+	Var* operator< (Var* v) override;
+	Var* operator<= (Var* v) override;
+	Var* operator> (Var* v) override;
+	Var* operator>= (Var* v) override;
+	Var* operator= (Var* v) override;
 	
 	std::string ToString() override
 	{
@@ -139,7 +180,10 @@ public:
 
 	Var* operator&& (Var* v) override;
 	Var* operator|| (Var* v) override;
+	Var* operator== (Var* v) override;
+	Var* operator!= (Var* v) override;
 	Var* operator!() override;
+	Var* operator= (Var* v) override;
 
 	std::string ToString() override
 	{
@@ -168,10 +212,10 @@ public:
 	_String();
 
 
-	_String operator+ (_String v)
-	{
-		return _String(this->value + v.value);
-	}
+	Var* operator+ (Var* v) override;
+	Var* operator== (Var* v) override;
+	Var* operator!= (Var* v) override;
+	Var* operator= (Var* v) override;
 
 	std::string ToString() override
 	{
