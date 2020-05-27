@@ -2,12 +2,14 @@
 #include "Var.h"
 #include <map>
 #include <list>
+#include <tuple>
 
 #include "Part.h"
 
 using namespace std;
 
-inline multimap<string, pair<Var::_Type, Var::_Type>> posoperations;
+//inline multimap<string, pair<Var::_Type, Var::_Type>> posoperations;
+inline multimap<string, tuple<Var::_Type, Var::_Type, Var::_Type>> posoperations;
 
 static class Postfix
 {
