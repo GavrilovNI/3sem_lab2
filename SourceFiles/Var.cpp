@@ -1,6 +1,8 @@
-#include "../HeaderFiles/Var.h"
+#include "..\Header Files\Var.h"
 
 using namespace std;
+
+const std::string Var::typeName[static_cast<int>(5)] = {"integer", "double", "boolean", "string" , "void"};
 
 Var* Var::Assign(string v)
 {
@@ -35,15 +37,13 @@ Var* Var::Assign(string v)
 	int count = 0;
 	for (int i = 0; i < v.length(); i++)
 	{
-		//if ((v[i] == '\'') && (v.substr(i, 1) == "'"))
-		if ((v[i] == '\'') && (v.substr(i, 1) == "'") || (v[i] == '.') && (v.substr(i, 1) == "."))
+		if (v[i] == '.')
 		{
 			count++;
 		}
 	}
 
-	//if ((count == 1) && (v.back() != '\''))
-	if ((count == 1) && (v.find('.', 1) != -1))
+	if ((count == 1) && (v.back() != '.'))
 	{
 		_Double* temp = new _Double(stod(v));
 		return (Var*)temp;
@@ -51,8 +51,8 @@ Var* Var::Assign(string v)
 
 	for (int i = 0; i < v.length(); i++)
 	{
-		if ((v[i] < '0') || (v[i] > '9'))
-			throw "unidentified symbol - '" + v.substr(i, 1) + "'";
+		if (((v[i] < '0') || (v[i] > '9')) && (v[i] != '-'))
+			throw ("unidentified symbol - '" + v.substr(i, 1) + "'");
 	}
 	_Int* temp = new _Int(stoi(v));
 	return (Var*)temp;
@@ -75,6 +75,255 @@ Var::_Type Var::GetTypeByString(std::string varName)
 		return _Type::_string;
 
 	throw "unidentified type";
+}
+
+std::string Var::GetTypeName(_Type t)
+{
+	return typeName[static_cast<int>(t)];
+}
+
+Var* Var::operator+(Var* v)
+{
+	switch (this->_type)
+	{
+	case _Type::_int:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_int;
+			return (Var*)(&(*(_Int*)this + *(_Int*)v));
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&_Double((*(_Int*)this).value + (*(_Double*)v).value);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+		break;
+
+	case _Type::_double:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this + *(_Int*)v);
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this + *(_Double*)v);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+	case _Type::_string:
+		if (v->_type == _Type::_string)
+			return (Var*)&(*(_String*)this + *(_String*)v);
+		break;
+	case _Type::_bool:
+		throw "Type boolean doesn't have operator+";
+		break;
+	case _Type::_void:
+		throw "Type void doesn't have operator+";
+		break;
+	}
+}
+
+Var* Var::operator-(Var* v)
+{
+	switch (this->_type)
+	{
+	case _Type::_int:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_int;
+			return (Var*)(&(*(_Int*)this - *(_Int*)v));
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&_Double((*(_Int*)this).value - (*(_Double*)v).value);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+		break;
+
+	case _Type::_double:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this - *(_Int*)v);
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this - *(_Double*)v);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+	case _Type::_bool:
+		throw "Type boolean doesn't have operator-";
+		break;
+	case _Type::_string:
+		throw "Type string doesn't have operator-";
+		break;
+	case _Type::_void:
+		throw "Type void doesn't have operator-";
+		break;
+	}
+}
+
+Var* Var::operator*(Var* v)
+{
+	switch (this->_type)
+	{
+	case _Type::_int:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_int;
+			return (Var*)(&(*(_Int*)this * *(_Int*)v));
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)v * *(_Int*)this);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+		break;
+
+	case _Type::_double:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this * *(_Int*)v);
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this * *(_Double*)v);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+	case _Type::_bool:
+		throw "Type boolean doesn't have operator*";
+		break;
+	case _Type::_string:
+		throw "Type string doesn't have operator*";
+		break;
+	case _Type::_void:
+		throw "Type void doesn't have operator*";
+		break;
+	}
+}
+
+Var* Var::operator/(Var* v)
+{
+	switch (this->_type)
+	{
+	case _Type::_int:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_int;
+			return (Var*)&(*(_Int*)this / *(_Int*)v);
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&_Double(((_Int*)this)->value  / ((_Double*)v)->value);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+		break;
+
+	case _Type::_double:
+		switch (v->_type)
+		{
+		case _Type::_int:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this / *(_Int*)v);
+			break;
+		case _Type::_double:
+			_type = _Type::_double;
+			return (Var*)&(*(_Double*)this / *(_Double*)v);
+			break;
+		default:
+			throw "Incompatible types";
+			break;
+		}
+	case _Type::_bool:
+		throw "Type boolean doesn't have operator+";
+		break;
+	case _Type::_string:
+		throw "Type string doesn't have operator+";
+		break;
+	case _Type::_void:
+		throw "Type void doesn't have operator+";
+		break;
+	}
+}
+
+Var* Var::operator%(Var* v)
+{
+	if ((this->_type == _Type::_int) && (v->_type == _Type::_int))
+	{
+		this->_type = _Type::_int;
+		return (Var*)&(*(_Int*)this % *(_Int*)v);
+	}
+	else
+	{
+		throw "Incompatible types";
+	}
+}
+
+Var* Var::operator&&(Var* v)
+{
+	if ((this->_type == _Type::_bool) && (v->_type == _Type::_bool))
+	{
+		this->_type = _Type::_bool;
+		return (Var*)&(*(_Bool*)this && *(_Bool*)v);
+	}
+	else
+	{
+		throw "Incompatible types";
+	}
+}
+
+Var* Var::operator||(Var* v)
+{
+	if ((this->_type == _Type::_bool) && (v->_type == _Type::_bool))
+	{
+		this->_type = _Type::_bool;
+		return (Var*)&(*(_Bool*)this || *(_Bool*)v);
+	}
+	else
+	{
+		throw "Incompatible types";
+	}
+}
+
+Var* Var::operator!()
+{
+	if (this->_type == _Type::_bool)
+	{
+		return (Var*)&(_Bool(!( ( (_Bool*) this) ->value) ) );
+	}
+	else
+	{
+		throw "Incompatible types";
+	}
 }
 
 _Int::_Int(int v)
@@ -133,6 +382,6 @@ _String::_String(std::string v)
 
 _String::_String()
 {
-	value = ' ';
+	value = "";
 	_type = _Type::_string;
 }
