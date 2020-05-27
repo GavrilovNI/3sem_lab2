@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\HeaderFiles\Compiler.h" />
+    <ClInclude Include="..\HeaderFiles\CompilerExceptions.h" />
     <ClInclude Include="..\HeaderFiles\Function.h" />
     <ClInclude Include="..\HeaderFiles\Part.h" />
     <ClInclude Include="..\HeaderFiles\Postfix.h" />
