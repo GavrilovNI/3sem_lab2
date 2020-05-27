@@ -1,4 +1,4 @@
-#include "..\Header Files\Var.h"
+#include "..\HeaderFiles\Var.h"
 
 using namespace std;
 
@@ -82,6 +82,12 @@ std::string Var::GetTypeName(_Type t)
 	return typeName[static_cast<int>(t)];
 }
 
+Var* Var::CreateVarByType(_Type t)
+{
+	Var *res = new Var;
+	res->_type = t;
+	return res;
+}
 
 Var* _Int::operator+ (Var* v)
 {
@@ -143,6 +149,76 @@ Var* _Int::operator% (Var* v)
 		throw "Incompatible types";
 }
 
+Var* _Int::operator== (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value == static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value == static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Int::operator!= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value != static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value != static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+
+Var* _Int::operator< (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value < static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value < static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Int::operator<= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value <= static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value <= static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Int::operator> (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value > static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value > static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Int::operator>= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value >= static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value >= static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Int::operator= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Int(static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_bool)
+		return new _Int(static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
 
 Var* _Double::operator+ (Var* v)
 {
@@ -192,6 +268,77 @@ Var* _Double::operator/ (Var* v)
 		throw "Incompatible types";
 }
 
+Var* _Double::operator== (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value == static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value == static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator!= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value != static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value != static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator< (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value < static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value < static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator<= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value <= static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value <= static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator> (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value > static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value > static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator>= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(value >= static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Bool(value >= static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator= (Var* v)
+{
+	if (v->GetType() == _Type::_double)
+		return new _Double(static_cast<_Double*>(v)->value);
+	else if (v->GetType() == _Type::_int)
+		return new _Double(static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_bool)
+		return new _Double(static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
 
 Var* _Bool::operator&& (Var* v)
 {
@@ -209,11 +356,68 @@ Var* _Bool::operator|| (Var* v)
 		throw "Incompatible types";
 }
 
+Var* _Bool::operator== (Var* v)
+{
+	if (v->GetType() == _Type::_bool)
+		return new _Bool(value == static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Bool::operator!= (Var* v)
+{
+	if (v->GetType() == _Type::_bool)
+		return new _Bool(value != static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
 Var* _Bool::operator!()
 {
 	return new _Bool(!value);
 }
 
+Var* _Bool::operator= (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Bool(static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_bool)
+		return new _Bool(static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _String::operator+ (Var* v)
+{
+	if (v->GetType() == _Type::_string)
+		return new _String(value + static_cast<_String*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _String::operator== (Var* v)
+{
+	if (v->GetType() == _Type::_string)
+		return new _Bool(value == static_cast<_String*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _String::operator!= (Var* v)
+{
+	if (v->GetType() == _Type::_string)
+		return new _Bool(value != static_cast<_String*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _String::operator= (Var* v)
+{
+	if (v->GetType() == _Type::_string)
+		return new _String(static_cast<_String*>(v)->value);
+	else
+		throw "Incompatible types";
+}
 
 _Int::_Int(int v)
 {
