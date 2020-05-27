@@ -11,42 +11,36 @@
 
 namespace CompilerExceptions
 {
-	class ComplierExc : public std::exception
+	class CompilerExc : public std::exception
 	{
-		virtual const char* what() const throw ()
-		{
-			return "unknown compiler exception";
-		}
-	};
-
-	class NotExpectedExc : public ComplierExc
-	{
-	private:
+	protected:
 		std::string str;
 	public:
-		NotExpectedExc(std::string str)
+		CompilerExc(std::string str)
 		{
 			this->str = str;
 		}
 
-		const char* what() const throw () override
+		const char* what() const throw ()
 		{
-			return string(str + " isn't expected here.").c_str();
+			return str.c_str();
 		}
 	};
-	class ExpectedExc : public ComplierExc
-	{
-	private:
-		std::string str;
-	public:
-		ExpectedExc(std::string str)
-		{
-			this->str = str;
-		}
 
-		const char* what() const throw () override
+	class NotExpectedExc : public CompilerExc
+	{
+	public:
+		NotExpectedExc(std::string str):CompilerExc(str + " isn't expected here.")
 		{
-			return string(str + " is expected here.").c_str();
+			
+		}
+	};
+	class ExpectedExc : public CompilerExc
+	{
+	public:
+		ExpectedExc(std::string str) :CompilerExc(str + " is expected here.")
+		{
+
 		}
 	};
 }
@@ -59,11 +53,11 @@ class Compiler
 private:
 	
 
-	bool GetTagState(std::map<std::string, bool> &tags, std::string name)
+	static bool GetTagState(std::map<std::string, bool> &tags, std::string name)
 	{
 		return (tags.find(name) != tags.end() && tags.find(name)->second);
 	}
-	bool CanBeAVarName(std::string name)
+	static bool CanBeAVarName(std::string name)
 	{
 		if (name.empty())
 			return false;
@@ -95,7 +89,7 @@ private:
 
 		return true;
 	}
-	bool IsPartEqual(Part* part, std::string str)
+	static bool IsPartEqual(Part* part, std::string str)
 	{
 		if (part == nullptr)
 			return false;
@@ -103,7 +97,7 @@ private:
 			return part->str == str;
 	}
 
-	void MakeFine(std::list<std::string>* words)
+	static void MakeFine(std::list<std::string>* words)
 	{
 		bool quoteOpened = false;
 		std::string inQuotesStr = "";
@@ -153,11 +147,11 @@ private:
 
 		if (quoteOpened)
 		{
-			throw "Bad Quotes";
+			throw CompilerExc("Bad Quotes");
 		}
 	}
 
-	Part* SplitStr(std::string str)
+	static Part* SplitStr(std::string str)
 	{
 		std::string chars[21]{ " ","\n","\t",";",",","'","\"",":=","(",")","+","-","*","/","=","<>","<=","<",">=",">",":" };
 
@@ -170,21 +164,31 @@ private:
 			return nullptr;
 		}
 
-		Part* first = new Part({ words.front(), nullptr, nullptr });
+		Part* _first = new Part({ words.front(), nullptr, nullptr });
 		words.pop_front();
 
 		std::map<std::string, bool> tags;
 
-		Part* curr = first;
-		while (curr != nullptr)
+		try
 		{
-			curr = GoToNextPart(curr, &words, &tags);
+			Part* curr = _first;
+			while (curr != nullptr)
+			{
+				curr = GoToNextPart(curr, &words, &tags);
+			}
+		}
+		catch (CompilerExc ex)
+		{
+			Clear(_first);
+			throw ex;
+
 		}
 
-		return first;
+
+		return _first;
 	}
 
-	bool IsEndWordFor(std::string start, std::string end, std::map<std::string, bool> tags)
+	static bool IsEndWordFor(std::string start, std::string end, std::map<std::string, bool> tags)
 	{
 		if (GetTagState(tags,"equalParts"))
 		{
@@ -227,10 +231,11 @@ private:
 			return end == "then";
 		}
 
+
 		return true;
 	}
 
-	Part* GoToNextPart(Part* part, std::list<std::string>* words, std::map<std::string, bool>* tags)
+	static Part* GoToNextPart(Part* part, std::list<std::string>* words, std::map<std::string, bool>* tags)
 	{
 		if (part == nullptr)
 		{
@@ -267,8 +272,8 @@ private:
 			}
 			if (newPart == nullptr)
 			{
-				throw "compilation error";//not found next part for this one
-				}
+				throw ExpectedExc("closing part of '"+part->str+"'");
+			}
 			else
 			{
 				part->next = newPart;
@@ -288,7 +293,7 @@ private:
 		return part->next;
 	}
 
-	std::list<std::pair<Part*, Part*>> GetArgumentsOfFuncCall(Part* bracket)
+	static std::list<std::pair<Part*, Part*>> GetArgumentsOfFuncCall(Part* bracket)
 	{
 		std::list<std::pair<Part*, Part*>> result;
 
@@ -330,7 +335,7 @@ private:
 
 		if (prev->str == ",")
 		{
-			throw "compilation error";
+			throw NotExpectedExc(prev->str);
 		}
 
 		if (argStart != nullptr)
@@ -341,131 +346,131 @@ private:
 		return result;
 	}
 
-	void CheckForErrors(Part* first, std::map<std::string, bool>* tags, std::map<std::string, std::pair<Var::_Type, bool>> &varTypes)
+	static void CheckForErrors(Part* _first, std::map<std::string, bool>* tags, std::map<std::string, std::pair<Var::_Type, bool>> &varTypes)
 	{
-		if (first == nullptr)
+		if (_first == nullptr)
 		{
 			return;
 		}
 		
-		if (first->str == "program")
+		if (_first->str == "program")
 		{
 			if (GetTagState(*tags, "const") ||
 				GetTagState(*tags, "var") ||
 				GetTagState(*tags, "program"))
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
 
-			if (first->nextInside == nullptr)
+			if (_first->nextInside == nullptr)
 			{
 				throw ExpectedExc("program name");
 			}
 
-			if(!IsPartEqual( first->nextInside->next, ";"))
+			if(!IsPartEqual( _first->nextInside->next, ";"))
 			{
 				throw ExpectedExc(";");
 			}
 
-			CheckForErrors(first->next, tags, varTypes);
+			CheckForErrors(_first->next, tags, varTypes);
 			return;
 		}
-		if (first->str == "const")
+		if (_first->str == "const")
 		{
 			if (GetTagState(*tags, "program"))
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
-			if (first->nextInside == nullptr)
+			if (_first->nextInside == nullptr)
 			{
 				throw ExpectedExc("consts creation");
 			}
 			(*tags)["const"] = true;
 			(*tags)["var"] = false;
-			CheckForErrors(first->nextInside, tags, varTypes);
+			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
-		else if (first->str == "var")
+		else if (_first->str == "var")
 		{
 			if (GetTagState(*tags, "program"))
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
-			if (first->nextInside == nullptr)
+			if (_first->nextInside == nullptr)
 			{
 				throw ExpectedExc("vars creation");
 			}
 
 			(*tags)["const"] = false;
 			(*tags)["var"] = true;
-			CheckForErrors(first->nextInside, tags, varTypes);
+			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
-		else if (first->str == "begin" && tags->count("begin")==0)
+		else if (_first->str == "begin" && tags->count("begin")==0)
 		{
 			(*tags)["const"] = false;
 			(*tags)["var"] = false;
 			(*tags)["program"] = true;
 
-			if (!IsPartEqual(first->next, "end."))
+			if (!IsPartEqual(_first->next, "end."))
 			{
 				throw ExpectedExc("end.");
 			}
 
-			CheckForErrors(first->nextInside, tags, varTypes);
+			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
 
-		if (first->str == ";")
+		if (_first->str == ";")
 		{
-			CheckForErrors(first->next, tags, varTypes);
+			CheckForErrors(_first->next, tags, varTypes);
 			return;
 		}
 
-		/*if (first->str=="(")
+		/*if (_first->str=="(")
 		{
-			if (first->next == nullptr || first->next->str != ")")
+			if (_first->next == nullptr || _first->next->str != ")")
 			{
 				throw "compilation error";
 			}
 		}
-		else */if (first->str == ")")
+		else */if (_first->str == ")")
 		{
-			if (!IsPartEqual(first->prev, "("))
+			if (!IsPartEqual(_first->prev, "("))
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
 		}
-		/*else if (first->str=="begin")
+		/*else if (_first->str=="begin")
 		{
-			if (first->next == nullptr || (first->next->str != "end" && first->next->str!="end."))
+			if (_first->next == nullptr || (_first->next->str != "end" && _first->next->str!="end."))
 			{
 				throw "compilation error";
 			}
 		}*/
-		else if (first->str == "end")
+		else if (_first->str == "end")
 		{
-			if (!IsPartEqual(first->prev, "begin"))
+			if (!IsPartEqual(_first->prev, "begin"))
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
 		}
-		else if (first->str == "end.")
+		else if (_first->str == "end.")
 		{
-			if (!IsPartEqual(first->prev, "begin") || 
-				first->next != nullptr)
+			if (!IsPartEqual(_first->prev, "begin") || 
+				_first->next != nullptr)
 			{
-				throw NotExpectedExc(first->str);
+				throw NotExpectedExc(_first->str);
 			}
 		}
-		else if (Function::IsFuncName(first->str))
+		else if (Function::IsFuncName(_first->str))
 		{
-			if (!IsPartEqual(first->next,"("))
+			if (!IsPartEqual(_first->next,"("))
 			{
-				throw ExpectedExc(first->next->str);
+				throw ExpectedExc(_first->next->str);
 			}
 
-			auto argParts = GetArgumentsOfFuncCall(first->next);
+			auto argParts = GetArgumentsOfFuncCall(_first->next);
 
 			std::list<std::pair<Var::_Type, bool>> argTypes;
 			for (auto it = argParts.begin(); it != argParts.end(); it++)
@@ -479,19 +484,19 @@ private:
 				argTypes.push_back(std::pair<Var::_Type, bool>(Postfix::CheckOnCompile(it->first, it->second, varTypes), isConst));
 			}
 
-			Function::CheckOnCompile(first->str, argTypes);
+			Function::CheckOnCompile(_first->str, argTypes);
 
-			CheckForErrors(first->next->next, tags, varTypes);
+			CheckForErrors(_first->next->next, tags, varTypes);
 			return;
 		}
-		/*else if (first->str == "="  && GetTagState(*tags, "const"))
+		/*else if (_first->str == "="  && GetTagState(*tags, "const"))
 		{
-			if (first->nextInside == nullptr)
+			if (_first->nextInside == nullptr)
 			{
 				throw "compilation error";
 			}
 
-			Part* varPart = first->prev;
+			Part* varPart = _first->prev;
 			if (varPart == nullptr)
 			{
 				throw "compilation error";
@@ -501,96 +506,88 @@ private:
 				throw "compilation error";
 			}
 
-			if (varTypes[varPart->str].first != Postfix::CheckOnCompile(first, first->next, varTypes))
+			if (varTypes[varPart->str]._first != Postfix::CheckOnCompile(_first, _first->next, varTypes))
 			{
 				throw "compilation error";
 			}
 		}*/
-		else if (first->str == "if")
+		else if (_first->str == "if")
 		{
-			/*if (!IsPartEqual(first->next, "then"))
+			/*if (!IsPartEqual(_first->next, "then"))
 			{
 				throw "compilation error";
 			}*/
-			if (first->nextInside == nullptr)
+			if (_first->nextInside == nullptr)
 			{
-				throw "compilation error";
+				throw ExpectedExc("condition");
 			}
 
-			if (Postfix::CheckOnCompile(first->nextInside, first->next, varTypes)!=Var::_Type::_bool)
+			if (Postfix::CheckOnCompile(_first->nextInside, _first->next, varTypes)!=Var::_Type::_bool)
 			{
-				throw "compilation error";
+				throw CompilerExc("condition is not a bool");
 			}
 
-			CheckForErrors(first->next, tags, varTypes);
+			CheckForErrors(_first->next, tags, varTypes);
 			return;
 		}
-		else if (first->str == "then")
+		else if (_first->str == "then")
 		{
-			if (!IsPartEqual(first->prev, "if"))
+			if (!IsPartEqual(_first->prev, "if"))
 			{
-				throw "compilation error";
+				throw NotExpectedExc(_first->str);
 			}
 
-			if (IsPartEqual(first->next, "end") || 
-				IsPartEqual(first->next, "end."))
+			if (IsPartEqual(_first->next, "end") || 
+				IsPartEqual(_first->next, "end."))
 			{
-				throw NotExpectedExc(first->next->str);
+				throw NotExpectedExc(_first->next->str);
 			}
 		}
-		else if (CanBeAVarName(first->str))
+		else if (CanBeAVarName(_first->str))
 		{
 			if (GetTagState(*tags, "const"))
 			{
-				if (first->next->str != "=")
+				if (_first->next->str != "=")
 				{
-					throw "compilation error";
+					throw NotExpectedExc(_first->next->str);
 				}
 
-				if (first->next->nextInside == nullptr)
+				if (_first->next->nextInside == nullptr)
 				{
-					throw "compilation error";
+					throw ExpectedExc("const initialization");
 				}
-				if (varTypes.count(first->str) != 0)
+				if (varTypes.count(_first->str) != 0)
 				{
-					throw "compilation error";
+					throw CompilerExc("var or const with same name already exists");
 				}
 
-				varTypes[first->str].first = Postfix::CheckOnCompile(first->next->nextInside, first->next->next, varTypes);
-				varTypes[first->str].second = true;
+				varTypes[_first->str].first = Postfix::CheckOnCompile(_first->next->nextInside, _first->next->next, varTypes);
+				varTypes[_first->str].second = true;
 
-				CheckForErrors(first->next->next, tags, varTypes);
+				CheckForErrors(_first->next->next, tags, varTypes);
 				return;
 			}
 			else if (GetTagState(*tags, "var"))
 			{
 				std::list<std::string> newVarNames;
 
-				Part* curr = first;
+				Part* curr = _first;
 
 				while (curr->str != ":")
 				{
 					if (curr->str != ",")
 					{
-						if (!CanBeAVarName(curr->str))
-						{
-							throw "compilation error";
-						}
 						newVarNames.push_back(curr->str);
 					}
 					curr = curr->next;
 					if (curr == nullptr)
 					{
-						throw "compilation error";
+						throw ExpectedExc(":");
 					}
 				}
 
 				
-				if (curr->next == nullptr)
-				{
-					throw "compilation error";//var type not present;
-				}
-				else if (curr->next->str == ";")
+				if (curr->next == nullptr || curr->next->str == ";")
 				{
 					throw ExpectedExc("var type");
 				}
@@ -598,7 +595,7 @@ private:
 
 				if (!IsPartEqual(curr->next->next, ";"))
 				{
-					throw "compilation error";//; not present;
+					throw ExpectedExc(";");
 				}
 
 				Var::_Type varsType = Var::GetTypeByString(curr->next->str);
@@ -607,7 +604,7 @@ private:
 				{
 					if (varTypes.count(*it) != 0)
 					{
-						throw "compilation error";
+						throw CompilerExc("var or const with same name already exists");
 					}
 
 					varTypes[*it].first = varsType;
@@ -619,61 +616,261 @@ private:
 			}
 			else if (GetTagState(*tags, "program"))
 			{
-				if (IsPartEqual(first->next, ":="))
+				if (IsPartEqual(_first->next, ":="))
 				{
-					Part* equalSign = first->next;
+					Part* equalSign = _first->next;
 					if (equalSign->nextInside == nullptr)
 					{
 						throw ExpectedExc("expression");
 					}
 
-					if (varTypes.count(first->str) == 0)
+					if (varTypes.count(_first->str) == 0)
 					{
-						throw "var '" + first->str + "' unidentified";
+						throw CompilerExc("var with same name '" + _first->str + "' unidentified");
 					}
-					if (varTypes[first->str].second)
+					if (varTypes[_first->str].second)
 					{
-						throw "const can't be changed";//its const
+						throw CompilerExc("consts can't be changed");
 					}
 
 					Var::_Type t = Postfix::CheckOnCompile(equalSign->nextInside, equalSign->next, varTypes);
-					if (varTypes[first->str].first != t)
+					if (varTypes[_first->str].first != t)
 					{
-						//std::string s = "can't convert '"+ss+"'";
-						throw "cant convert";
+						throw CompilerExc("cant convert from '" + Var::GetTypeName(t) + "' to '" + Var::GetTypeName(varTypes[_first->str].first) + "'");
 					}
 					CheckForErrors(equalSign->next, tags, varTypes);
 					return;
 				}
 				else
 				{
-					throw NotExpectedExc(first->str);
+					throw NotExpectedExc(_first->str);
 				}
 			}
 			else
 			{
-				throw "unknown error";
+				throw NotExpectedExc(_first->str);
 			}
 		}
 		else
 		{
-			throw "compilation error";
+			throw NotExpectedExc(_first->str);
 		}
 
 		
-		if (first->nextInside == nullptr)
+		if (_first->nextInside == nullptr)
 		{
-			CheckForErrors(first->next, tags, varTypes);
+			CheckForErrors(_first->next, tags, varTypes);
 		}
 		else
 		{
-			CheckForErrors(first->nextInside, tags, varTypes);
+			CheckForErrors(_first->nextInside, tags, varTypes);
 		}
 	}
 
+
+	static void Clear(Part* p)
+	{
+		while (p != nullptr)
+		{
+			Part* delPart = p;
+
+			if (p->nextInside == nullptr)
+			{
+				p = p->next;
+			}
+			else
+			{
+				p = p->nextInside;
+			}
+			delete delPart;
+		}
+	}
+
+
+	//dont call this on compile
+	static Part* GetEndForIf(Part* thenPart)
+	{
+		if (thenPart->next->str == "begin")
+		{
+			return thenPart->next->next;
+		}
+		else if (thenPart->next->str == "if")
+		{
+			return GetEndForIf(thenPart->next->next);
+		}
+		else
+		{
+			while (thenPart->str != ";")
+			{
+				thenPart = thenPart->next;
+			}
+			return thenPart;
+		}
+	}
+
+	void Run(Part* _first, std::map<std::string, bool>* tags, std::map<std::string, std::pair<Var*, bool>>& vars)
+	{
+		if (_first->str == "program")
+		{
+			//TODO: set program name
+			Run(_first->next, tags, vars);
+			return;
+		}
+		if (_first->str == "const")
+		{
+			(*tags)["const"] = true;
+			(*tags)["var"] = false;
+			Run(_first->nextInside, tags, vars);
+			return;
+		}
+		else if (_first->str == "var")
+		{
+			(*tags)["const"] = false;
+			(*tags)["var"] = true;
+			Run(_first->nextInside, tags, vars);
+			return;
+		}
+		else if (_first->str == "begin" && tags->count("begin") == 0)
+		{
+			(*tags)["const"] = false;
+			(*tags)["var"] = false;
+			(*tags)["program"] = true;
+
+			Run(_first->nextInside, tags, vars);
+			return;
+		}
+
+		std::string passthrough[]{ ";",")","end","end.","then" };
+
+		auto lastPT = passthrough + sizeof(passthrough) / sizeof(std::string);
+		if (std::find(passthrough, lastPT, _first->str) != lastPT)
+		{
+			Run(_first->next, tags, vars);
+			return;
+		}
+
+		if (Function::IsFuncName(_first->str))
+		{
+			auto argParts = GetArgumentsOfFuncCall(_first->next);
+
+			std::list<std::pair<Var*, bool>> args;
+			std::list<Var*> toDelete;
+			for (auto it = argParts.begin(); it != argParts.end(); it++)
+			{
+				bool isConst = true;
+				if (it->first->next == it->second && vars.count(it->first->str))
+				{
+					args.push_back(vars[it->first->str]);
+				}
+				else
+				{
+					Var* nv = Postfix::Calculate(it->first, it->second, vars);
+					toDelete.push_back(nv);
+					args.push_back(std::pair<Var*, bool>(nv, true));
+				}
+				
+			}
+
+			Function::Calculate(_first->str, args);
+
+			for (auto it = toDelete.begin(); it != toDelete.end(); it++)
+			{
+				delete (*it);
+			}
+
+			Run(_first->next->next, tags, vars);
+			return;
+		}
+		else if (_first->str == "if")
+		{
+			_Bool* b = (_Bool*)Postfix::Calculate(_first->nextInside, _first->next, vars);
+
+			if (b->value)
+			{
+				Run(_first->next->next, tags, vars);
+			}
+			else
+			{
+				Run(GetEndForIf(_first->next), tags, vars);
+			}
+			return;
+		}
+		else if (CanBeAVarName(_first->str))
+		{
+			if (GetTagState(*tags, "const"))
+			{
+				vars[_first->str].first = Postfix::Calculate(_first->next->nextInside, _first->next->next, vars);
+				vars[_first->str].second = true;
+
+				Run(_first->next->next, tags, vars);
+				return;
+			}
+			else if (GetTagState(*tags, "var"))
+			{
+				std::list<std::string> newVarNames;
+
+				Part* curr = _first;
+
+				while (curr->str != ":")
+				{
+					if (curr->str != ",")
+					{
+						newVarNames.push_back(curr->str);
+					}
+					curr = curr->next;
+				}
+
+				Var::_Type varsType = Var::GetTypeByString(curr->next->str);
+
+				for (auto it = newVarNames.begin(); it != newVarNames.end(); it++)
+				{
+					vars[*it].first = Var::CreateVarByType(varsType);
+					vars[*it].second = false;
+				}
+
+				Run(curr->next->next, tags, vars);
+				return;
+			}
+			else if (GetTagState(*tags, "program"))
+			{
+				if (IsPartEqual(_first->next, ":="))
+				{
+					Part* equalSign = _first->next;
+
+					Var* newVar= Postfix::Calculate(equalSign->nextInside, equalSign->next, vars);
+
+					vars[_first->str] = pair<Var*, bool>(newVar, false);
+
+					Run(equalSign->next, tags, vars);
+					return;
+				}
+			}
+		}
+
+
+		if (_first->nextInside == nullptr)
+		{
+			Run(_first->next, tags, vars);
+		}
+		else
+		{
+			Run(_first->nextInside, tags, vars);
+		}
+	}
+
+	Part* first = nullptr;
 public:
 
+	~Compiler()
+	{
+		Clear();
+	}
 	
+	void Clear()
+	{
+		Clear(first);
+		first = nullptr;
+	}
 
 	void Compile(std::string str)
 	{
@@ -681,31 +878,42 @@ public:
 		std::map<std::string, std::pair<Var::_Type, bool>> varTypes = std::map<std::string, std::pair<Var::_Type, bool>>();
 
 		
-		Part* first = SplitStr(str);
+		first = SplitStr(str);
 
-		std::map<std::string, bool> tags;
-		CheckForErrors(first, &tags, varTypes);
-
-
-		while (first != nullptr)
+		try
 		{
-			Part* delPart = first;
-			
-			if (first->nextInside == nullptr)
-			{
-				first = first->next;
-			}
-			else
-			{
-				first = first->nextInside;
-			}
-			delete delPart;
+			std::map<std::string, bool> tags;
+			CheckForErrors(first, &tags, varTypes);
+		}
+		catch (CompilerExc ex)
+		{
+			Clear();
+			throw ex;
+		}
+		catch (...)
+		{
+			throw "";
 		}
 
-		/*for (auto const& [key, val] : vars)
+
+	}
+
+	void Run()
+	{
+		if (first == nullptr)
 		{
-			delete val;
-		}*/
+			throw CompilerExc("Program is not compiled.");
+		}
+
+		std::map<std::string, bool> tags;
+		std::map<std::string, std::pair<Var*, bool>> vars;
+
+		Run(first, &tags, vars);
+
+		for (auto it = vars.begin(); it != vars.end(); it++)
+		{
+			delete (it->second.first);
+		}
 	}
 
 
