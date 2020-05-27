@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <ostream>
 
 
 
@@ -20,20 +21,49 @@ public:
 
 	//virtual Var operator+ (Var& v);
 
-	Var* operator+ (Var*);
-	Var* operator- (Var*);
-	Var* operator* (Var*);
-	Var* operator/ (Var*);
-	Var* operator% (Var*);
-	Var* operator&& (Var*);
-	Var* operator|| (Var*);
-	Var* operator! ();
+	virtual std::string ToString()
+	{
+		throw "R";
+	}
+
+	virtual Var* operator+ (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator- (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator* (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator/ (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator% (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator&& (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator|| (Var*)
+	{
+		throw "Error";
+	}
+	virtual Var* operator! ()
+	{
+		throw "Error";
+	}
 
 protected:
 	_Type _type;
 };
 
-class _Int : Var
+class _Int : public Var
 {
 public:
 	int value;
@@ -41,35 +71,17 @@ public:
 	_Int(int v);
 	_Int();
 
-	_Int operator+ (_Int v)
+	std::string ToString() override
 	{
-		return _Int(this->value + v.value);
+		return std::to_string(value);
 	}
 
-	/*Var operator+ (Var& v) override
-	{
-		return (Var)&(*this + *v);
-	}*/
+	Var* operator+ (Var* v) override;
+	Var* operator- (Var* v) override;
+	Var* operator* (Var* v) override;
+	Var* operator/ (Var* v) override;
+	Var* operator% (Var* v) override;
 
-	_Int operator- (_Int v)
-	{
-		return _Int(this->value - v.value);
-	}
-
-	_Int operator* (_Int v)
-	{
-		return _Int(this->value * v.value);
-	}
-
-	_Int operator/ (_Int v)
-	{
-		return _Int(this->value / v.value);
-	}
-
-	_Int operator% (_Int v)
-	{
-		return _Int(this->value % v.value);
-	}
 
 
 	explicit operator int() const
@@ -88,7 +100,7 @@ public:
 	}
 };
 
-class _Double : Var
+class _Double : public Var
 {
 public:
 	double value;
@@ -97,45 +109,15 @@ public:
 	_Double(int v);
 	_Double();
 
+	Var* operator+ (Var* v) override;
+	Var* operator- (Var* v) override;
+	Var* operator* (Var* v) override;
+	Var* operator/ (Var* v) override;
 
-	_Double operator+ (_Double v)
+	
+	std::string ToString() override
 	{
-		return _Double(this->value + v.value);
-	}
-
-	_Double operator+ (_Int v)
-	{
-		return _Double(this->value + v.value);
-	}
-
-	_Double operator- (_Double v)
-	{
-		return _Double(this->value - v.value);
-	}
-
-	_Double operator- (_Int v)
-	{
-		return _Double(this->value - v.value);
-	}
-
-	_Double operator* (_Double v)
-	{
-		return _Double(this->value * v.value);
-	}
-
-	_Double operator* (_Int v)
-	{
-		return _Double(this->value * v.value);
-	}
-
-	_Double operator/ (_Double v)
-	{
-		return _Double(this->value / v.value);
-	}
-
-	_Double operator/ (_Int v)
-	{
-		return _Double(this->value / v.value);
+		return std::to_string(value);
 	}
 
 
@@ -145,29 +127,8 @@ public:
 	}
 };
 
-/*
-_Double operator+ (_Int v1, _Double v2)
-{
-	return _Double(v1.value + v2.value);
-}
 
-_Double operator- (_Int v1, _Double v2)
-{
-	return _Double(v1.value - v2.value);
-}
-
-_Double operator* (_Int v1, _Double v2)
-{
-	return _Double(v1.value * v2.value);
-}
-
-_Double operator/ (_Int v1, _Double v2)
-{
-	return _Double(v1.value / v2.value);
-}
-*/
-
-class _Bool : Var
+class _Bool : public Var
 {
 public:
 	bool value;
@@ -176,20 +137,13 @@ public:
 	_Bool(int v);
 	_Bool();
 
+	Var* operator&& (Var* v) override;
+	Var* operator|| (Var* v) override;
+	Var* operator!() override;
 
-	_Bool operator&& (_Bool v)
+	std::string ToString() override
 	{
-		return _Bool(this->value && v.value);
-	}
-
-	_Bool operator|| (_Bool v)
-	{
-		return _Bool(this->value || v.value);
-	}
-
-	_Bool operator! ()
-	{
-		return _Bool(!(this->value));
+		return std::to_string(value);
 	}
 
 
@@ -205,7 +159,7 @@ public:
 	}
 };
 
-class _String : Var
+class _String : public Var
 {
 public:
 	std::string value;
@@ -219,6 +173,10 @@ public:
 		return _String(this->value + v.value);
 	}
 
+	std::string ToString() override
+	{
+		return value;
+	}
 
 	explicit operator std::string() const
 	{
@@ -226,53 +184,3 @@ public:
 	}
 };
 
-
-
-
-
-/*
-Var* operator+ (Var& v)
-	{
-		switch (this->_type)
-		{
-		case _Type::_int:
-			switch (v._type)
-			{
-			case _Type::_int:
-				return (Var*)&(*(_Int*)this + *(_Int*)&v);
-				break;
-			case _Type::_double:
-				this->_type = _Type::_double;
-				return (Var*)&(*(_Double*)&v + *(_Int*)this);
-				break;
-			default:
-				throw "Incompatible types";
-				break;
-			}
-			break;
-
-		case _Type::_double:
-			switch (v._type)
-			{
-			case _Type::_int:
-				return (Var*)&(*(_Double*)this + *(_Int*)&v);
-				break;
-			case _Type::_double:
-				return (Var*)&(*(_Double*)this + *(_Double*)&v);
-				break;
-			default:
-				throw "Incompatible types";
-				break;
-			}
-		case _Type::_bool:
-			throw "Type boolean doesn't have operator+";
-			break;
-		case _Type::_string:
-			throw "Type string doesn't have operator+";
-			break;
-		case _Type::_void:
-			throw "Type void doesn't have operator+";
-			break;
-		}
-	}
-*/
