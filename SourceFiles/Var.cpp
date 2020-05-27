@@ -82,249 +82,138 @@ std::string Var::GetTypeName(_Type t)
 	return typeName[static_cast<int>(t)];
 }
 
-Var* Var::operator+(Var* v)
-{
-	switch (this->_type)
-	{
-	case _Type::_int:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_int;
-			return (Var*)(&(*(_Int*)this + *(_Int*)v));
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&_Double((*(_Int*)this).value + (*(_Double*)v).value);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-		break;
 
-	case _Type::_double:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this + *(_Int*)v);
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this + *(_Double*)v);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-	case _Type::_string:
-		if (v->_type == _Type::_string)
-			return (Var*)&(*(_String*)this + *(_String*)v);
-		break;
-	case _Type::_bool:
-		throw "Type boolean doesn't have operator+";
-		break;
-	case _Type::_void:
-		throw "Type void doesn't have operator+";
-		break;
-	}
+Var* _Int::operator+ (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Int(value + static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value + static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
 }
 
-Var* Var::operator-(Var* v)
+Var* _Int::operator- (Var* v)
 {
-	switch (this->_type)
-	{
-	case _Type::_int:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_int;
-			return (Var*)(&(*(_Int*)this - *(_Int*)v));
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&_Double((*(_Int*)this).value - (*(_Double*)v).value);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-		break;
-
-	case _Type::_double:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this - *(_Int*)v);
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this - *(_Double*)v);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-	case _Type::_bool:
-		throw "Type boolean doesn't have operator-";
-		break;
-	case _Type::_string:
-		throw "Type string doesn't have operator-";
-		break;
-	case _Type::_void:
-		throw "Type void doesn't have operator-";
-		break;
-	}
+	if (v->GetType() == _Type::_int)
+		return new _Int(value - static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value - static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
 }
 
-Var* Var::operator*(Var* v)
+Var* _Int::operator* (Var* v)
 {
-	switch (this->_type)
-	{
-	case _Type::_int:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_int;
-			return (Var*)(&(*(_Int*)this * *(_Int*)v));
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)v * *(_Int*)this);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-		break;
-
-	case _Type::_double:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this * *(_Int*)v);
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this * *(_Double*)v);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-	case _Type::_bool:
-		throw "Type boolean doesn't have operator*";
-		break;
-	case _Type::_string:
-		throw "Type string doesn't have operator*";
-		break;
-	case _Type::_void:
-		throw "Type void doesn't have operator*";
-		break;
-	}
+	if (v->GetType() == _Type::_int)
+		return new _Int(value * static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value * static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
 }
 
-Var* Var::operator/(Var* v)
+Var* _Int::operator/ (Var* v)
 {
-	switch (this->_type)
+	if (v->GetType() == _Type::_int)
 	{
-	case _Type::_int:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_int;
-			return (Var*)&(*(_Int*)this / *(_Int*)v);
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&_Double(((_Int*)this)->value  / ((_Double*)v)->value);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-		break;
-
-	case _Type::_double:
-		switch (v->_type)
-		{
-		case _Type::_int:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this / *(_Int*)v);
-			break;
-		case _Type::_double:
-			_type = _Type::_double;
-			return (Var*)&(*(_Double*)this / *(_Double*)v);
-			break;
-		default:
-			throw "Incompatible types";
-			break;
-		}
-	case _Type::_bool:
-		throw "Type boolean doesn't have operator+";
-		break;
-	case _Type::_string:
-		throw "Type string doesn't have operator+";
-		break;
-	case _Type::_void:
-		throw "Type void doesn't have operator+";
-		break;
+		if (static_cast<_Int*>(v)->value == 0)
+			throw "Zero division error";
+		return new _Int(value / static_cast<_Int*>(v)->value);
 	}
-}
-
-Var* Var::operator%(Var* v)
-{
-	if ((this->_type == _Type::_int) && (v->_type == _Type::_int))
+	else if (v->GetType() == _Type::_double)
 	{
-		this->_type = _Type::_int;
-		return (Var*)&(*(_Int*)this % *(_Int*)v);
+		if (static_cast<_Double*>(v)->value == 0)
+			throw "Zero division error";
+		return new _Double(value / static_cast<_Double*>(v)->value);
 	}
 	else
-	{
 		throw "Incompatible types";
-	}
 }
 
-Var* Var::operator&&(Var* v)
+Var* _Int::operator% (Var* v)
 {
-	if ((this->_type == _Type::_bool) && (v->_type == _Type::_bool))
+	if (v->GetType() == _Type::_int)
 	{
-		this->_type = _Type::_bool;
-		return (Var*)&(*(_Bool*)this && *(_Bool*)v);
+		if (static_cast<_Int*>(v)->value == 0)
+			throw "Zero division error";
+		return new _Int(value % static_cast<_Int*>(v)->value);
 	}
 	else
-	{
 		throw "Incompatible types";
-	}
 }
 
-Var* Var::operator||(Var* v)
+
+Var* _Double::operator+ (Var* v)
 {
-	if ((this->_type == _Type::_bool) && (v->_type == _Type::_bool))
-	{
-		this->_type = _Type::_bool;
-		return (Var*)&(*(_Bool*)this || *(_Bool*)v);
-	}
+	if (v->GetType() == _Type::_int)
+		return new _Double(value + static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value + static_cast<_Double*>(v)->value);
 	else
-	{
 		throw "Incompatible types";
-	}
 }
 
-Var* Var::operator!()
+Var* _Double::operator- (Var* v)
 {
-	if (this->_type == _Type::_bool)
+	if (v->GetType() == _Type::_int)
+		return new _Double(value - static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value - static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator* (Var* v)
+{
+	if (v->GetType() == _Type::_int)
+		return new _Double(value * static_cast<_Int*>(v)->value);
+	else if (v->GetType() == _Type::_double)
+		return new _Double(value * static_cast<_Double*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Double::operator/ (Var* v)
+{
+	if (v->GetType() == _Type::_int)
 	{
-		return (Var*)&(_Bool(!( ( (_Bool*) this) ->value) ) );
+		if (static_cast<_Int*>(v)->value == 0)
+			throw "Zero division error";
+		return new _Double(value / static_cast<_Int*>(v)->value);
+	}
+	else if (v->GetType() == _Type::_double)
+	{
+		if (static_cast<_Double*>(v)->value == 0)
+			throw "Zero division error";
+		return new _Double(value / static_cast<_Double*>(v)->value);
 	}
 	else
-	{
 		throw "Incompatible types";
-	}
 }
+
+
+Var* _Bool::operator&& (Var* v)
+{
+	if (v->GetType() == _Type::_bool)
+		return new _Bool(value && static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Bool::operator|| (Var* v)
+{
+	if (v->GetType() == _Type::_bool)
+		return new _Bool(value || static_cast<_Bool*>(v)->value);
+	else
+		throw "Incompatible types";
+}
+
+Var* _Bool::operator!()
+{
+	return new _Bool(!value);
+}
+
 
 _Int::_Int(int v)
 {
