@@ -1,3 +1,5 @@
+#pragma once
+
 class CompilerExc : public std::exception
 {
 protected:

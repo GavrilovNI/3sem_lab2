@@ -9,15 +9,30 @@
 #include "Part.h"
 #include "Function.h"
 #include "CompilerExceptions.h"
+#include <variant>
 
 class Compiler
 {
 private:
 	
+	using TAG = std::variant<bool, int>;
+	using TAGMAP = std::map<std::string, TAG>;
 
-	static bool GetTagState(std::map<std::string, bool> &tags, std::string name)
+
+	template<typename T>
+	static T GetTagState(TAGMAP &tags, std::string name)
 	{
-		return (tags.find(name) != tags.end() && tags.find(name)->second);
+		
+
+
+		if (tags.count(name) == 0)
+		{
+			if (std::is_same<T, int>::value)
+				tags[name] = 0;
+			else
+				tags[name] = false;
+		}
+		return std::get<T>(tags[name]);
 	}
 	static bool CanBeAVarName(std::string name)
 	{
@@ -59,11 +74,11 @@ private:
 			return part->str == str;
 	}
 
-	static void MakeFine(std::list<std::string>* words)
+	static void MakeFine(std::list<std::string>& words)
 	{
 		bool quoteOpened = false;
 		std::string inQuotesStr = "";
-		for (auto it = words->begin(); it != words->end();)
+		for (auto it = words.begin(); it != words.end();)
 		{
 			std::transform((*it).begin(), (*it).end(), (*it).begin(), [](unsigned char c) { return std::tolower(c); });
 
@@ -87,16 +102,16 @@ private:
 			if (quoteOpened || *it == " " || *it == "\n" || *it == "\t")
 			{
 				
-				if (it == words->begin())
+				if (it == words.begin())
 				{
-					words->erase(it);
-					it = words->begin();
+					words.erase(it);
+					it = words.begin();
 				}
 				else
 				{
 					auto removeIt = it;
 					it--;
-					words->erase(removeIt);
+					words.erase(removeIt);
 					it++;
 				}
 				
@@ -118,7 +133,8 @@ private:
 		std::string chars[21]{ " ","\n","\t",";",",","'","\"",":=","(",")","+","-","*","/","=","<>","<=","<",">=",">",":" };
 
 		std::list<std::string> words = TextSplitter::Split(str, chars, sizeof(chars) / sizeof(std::string));
-		MakeFine(&words);
+		
+		MakeFine(words);
 
 		if (words.empty())
 		{
@@ -129,14 +145,14 @@ private:
 		Part* _first = new Part({ words.front(), nullptr, nullptr });
 		words.pop_front();
 
-		std::map<std::string, bool> tags;
+		TAGMAP tags;
 
 		try
 		{
 			Part* curr = _first;
 			while (curr != nullptr)
 			{
-				curr = GoToNextPart(curr, &words, &tags);
+				curr = GoToNextPart(curr, &words, tags);
 			}
 		}
 		catch (CompilerExc ex)
@@ -150,9 +166,9 @@ private:
 		return _first;
 	}
 
-	static bool IsEndWordFor(std::string start, std::string end, std::map<std::string, bool> tags)
+	static bool IsEndWordFor(std::string start, std::string end, TAGMAP tags)
 	{
-		if (GetTagState(tags,"equalParts"))
+		if (GetTagState<bool>(tags,"equalParts"))
 		{
 			return false;
 		}
@@ -167,7 +183,7 @@ private:
 		}
 		else if (start == "=")
 		{
-			if (GetTagState(tags, "const"))
+			if (GetTagState<bool>(tags, "const"))
 			{
 				return end == ";";
 			}
@@ -186,18 +202,25 @@ private:
 		}
 		else if (start == ":=")
 		{
-			return end == ";" || end == "end" || end == "end.";
+			return end == ";" || end == "end" || end == "end." || end == "else";
 		}
 		else if (start == "if")
 		{
 			return end == "then";
 		}
-
+		else if (start == "then")
+		{
+			return end == "else" || end == ";";
+		}
+		else if (start == "else")
+		{
+			return end == "else" || end == ";";
+		}
 
 		return true;
 	}
 
-	static Part* GoToNextPart(Part* part, std::list<std::string>* words, std::map<std::string, bool>* tags)
+	static Part* GoToNextPart(Part* part, std::list<std::string>* words, TAGMAP& tags)
 	{
 		if (part == nullptr)
 		{
@@ -206,11 +229,11 @@ private:
 
 		if (part->str == "const")
 		{
-			(*tags)["const"] = true;
+			tags["const"] = true;
 		}
 		else if (part->str=="var" || part->str == "begin")
 		{
-			(*tags)["const"] = false;
+			tags["const"] = false;
 		}
 
 		if (part->next == nullptr && !words->empty())
@@ -219,18 +242,18 @@ private:
 			words->pop_front();
 			//std::string nextStr = *(words->begin());
 
-			if (newPart != nullptr && !IsEndWordFor(part->str, newPart->str, *tags))
+			if (newPart != nullptr && !IsEndWordFor(part->str, newPart->str, tags))
 			{
 				part->nextInside = newPart;
 				newPart->prev = part;
 			}
 
-			while (newPart != nullptr && !IsEndWordFor(part->str, newPart->str, *tags))
+			while (newPart != nullptr && !IsEndWordFor(part->str, newPart->str, tags))
 			{
-				(*tags)["equalParts"] = false;
+				tags["equalParts"] = false;
 				Part* prevPart = newPart;
 				newPart = GoToNextPart(newPart, words, tags);
-				(*tags)["equalParts"] = part->str == prevPart->str;
+				tags["equalParts"] = part->str == prevPart->str;
 			}
 			if (newPart == nullptr)
 			{
@@ -239,7 +262,9 @@ private:
 			else
 			{
 				part->next = newPart;
-				if (newPart->prev == nullptr)
+
+				newPart->prev = part;
+				/*if (newPart->prev == nullptr)
 				{
 					newPart->prev = part;
 				}
@@ -247,7 +272,7 @@ private:
 				{
 					newPart->prevInside = newPart->prev;
 					newPart->prev = part;
-				}
+				}*/
 			}
 
 
@@ -308,18 +333,20 @@ private:
 		return result;
 	}
 
-	static void CheckForErrors(Part* _first, std::map<std::string, bool>* tags, std::map<std::string, std::pair<Var::_Type, bool>> &varTypes)
+	static void CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, std::pair<Var::_Type, bool>> &varTypes)
 	{
 		if (_first == nullptr)
 		{
 			return;
 		}
+
+
 		
 		if (_first->str == "program")
 		{
-			if (GetTagState(*tags, "const") ||
-				GetTagState(*tags, "var") ||
-				GetTagState(*tags, "program"))
+			if (GetTagState<bool>(tags, "const") ||
+				GetTagState<bool>(tags, "var") ||
+				GetTagState<bool>(tags, "program"))
 			{
 				throw NotExpectedExc(_first->str);
 			}
@@ -339,7 +366,7 @@ private:
 		}
 		if (_first->str == "const")
 		{
-			if (GetTagState(*tags, "program"))
+			if (GetTagState<bool>(tags, "program"))
 			{
 				throw NotExpectedExc(_first->str);
 			}
@@ -347,14 +374,14 @@ private:
 			{
 				throw ExpectedExc("consts creation");
 			}
-			(*tags)["const"] = true;
-			(*tags)["var"] = false;
+			tags["const"] = true;
+			tags["var"] = false;
 			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
 		else if (_first->str == "var")
 		{
-			if (GetTagState(*tags, "program"))
+			if (GetTagState<bool>(tags, "program"))
 			{
 				throw NotExpectedExc(_first->str);
 			}
@@ -363,16 +390,16 @@ private:
 				throw ExpectedExc("vars creation");
 			}
 
-			(*tags)["const"] = false;
-			(*tags)["var"] = true;
+			tags["const"] = false;
+			tags["var"] = true;
 			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
-		else if (_first->str == "begin" && tags->count("begin")==0)
+		else if (_first->str == "begin" && tags.count("begin")==0)
 		{
-			(*tags)["const"] = false;
-			(*tags)["var"] = false;
-			(*tags)["program"] = true;
+			tags["const"] = false;
+			tags["var"] = false;
+			tags["program"] = true;
 
 			if (!IsPartEqual(_first->next, "end."))
 			{
@@ -489,6 +516,7 @@ private:
 				throw CompilerExc("condition is not a bool");
 			}
 
+			
 			CheckForErrors(_first->next, tags, varTypes);
 			return;
 		}
@@ -499,15 +527,26 @@ private:
 				throw NotExpectedExc(_first->str);
 			}
 
-			if (IsPartEqual(_first->next, "end") || 
-				IsPartEqual(_first->next, "end."))
+			TAGMAP tmp;
+			if (_first->nextInside == nullptr || IsEndWordFor("then", _first->nextInside->str, tmp))
 			{
-				throw NotExpectedExc(_first->next->str);
+				throw ExpectedExc("body of if");
 			}
 		}
+		else if (_first->str == "else")
+		{
+			if (!IsPartEqual(_first->prev, "then"))
+			{
+				throw NotExpectedExc(_first->str);
+			}
+
+			CheckForErrors(_first->next, tags, varTypes);
+			return;
+		}
+		
 		else if (CanBeAVarName(_first->str))
 		{
-			if (GetTagState(*tags, "const"))
+			if (GetTagState<bool>(tags, "const"))
 			{
 				if (_first->next->str != "=")
 				{
@@ -529,7 +568,7 @@ private:
 				CheckForErrors(_first->next->next, tags, varTypes);
 				return;
 			}
-			else if (GetTagState(*tags, "var"))
+			else if (GetTagState<bool>(tags, "var"))
 			{
 				std::list<std::string> newVarNames;
 
@@ -576,7 +615,7 @@ private:
 				CheckForErrors(curr->next->next, tags, varTypes);
 				return;
 			}
-			else if (GetTagState(*tags, "program"))
+			else if (GetTagState<bool>(tags, "program"))
 			{
 				if (IsPartEqual(_first->next, ":="))
 				{
@@ -662,7 +701,7 @@ private:
 		}
 		else
 		{
-			while (thenPart->str != ";")
+			while (thenPart->str != ";" && thenPart->str != "else")
 			{
 				thenPart = thenPart->next;
 			}
@@ -670,8 +709,13 @@ private:
 		}
 	}
 
-	void Run(Part* _first, std::map<std::string, bool>* tags, std::map<std::string, std::pair<Var*, bool>>& vars)
+	void Run(Part* _first, TAGMAP tags, std::map<std::string, std::pair<Var*, bool>>& vars)
 	{
+		if (_first == nullptr)
+		{
+			return;
+		}
+
 		if (_first->str == "program")
 		{
 			//TODO: set program name
@@ -680,23 +724,23 @@ private:
 		}
 		if (_first->str == "const")
 		{
-			(*tags)["const"] = true;
-			(*tags)["var"] = false;
+			tags["const"] = true;
+			tags["var"] = false;
 			Run(_first->nextInside, tags, vars);
 			return;
 		}
 		else if (_first->str == "var")
 		{
-			(*tags)["const"] = false;
-			(*tags)["var"] = true;
+			tags["const"] = false;
+			tags["var"] = true;
 			Run(_first->nextInside, tags, vars);
 			return;
 		}
-		else if (_first->str == "begin" && tags->count("begin") == 0)
+		else if (_first->str == "begin" && tags.count("begin") == 0)
 		{
-			(*tags)["const"] = false;
-			(*tags)["var"] = false;
-			(*tags)["program"] = true;
+			tags["const"] = false;
+			tags["var"] = false;
+			tags["program"] = true;
 
 			Run(_first->nextInside, tags, vars);
 			return;
@@ -704,12 +748,19 @@ private:
 
 		std::string passthrough[]{ ";",")","end","end.","then" };
 
+		if (_first->str == ";")
+		{
+			tags["gotoelse"] = false;
+		}
+
 		auto lastPT = passthrough + sizeof(passthrough) / sizeof(std::string);
 		if (std::find(passthrough, lastPT, _first->str) != lastPT)
 		{
 			Run(_first->next, tags, vars);
 			return;
 		}
+
+		
 
 		if (Function::IsFuncName(_first->str))
 		{
@@ -749,17 +800,29 @@ private:
 
 			if (b->value)
 			{
-				Run(_first->next->next, tags, vars);
+				Run(_first->next->nextInside, tags, vars);
+				
 			}
 			else
 			{
-				Run(GetEndForIf(_first->next), tags, vars);
+				tags["gotoelse"] = true;
+				Run(_first->next->next, tags, vars);
 			}
 			return;
 		}
+		else if (_first->str == "else")
+		{
+			if (!GetTagState<bool>(tags, "gotoelse"))
+			{
+				Run(_first->next, tags, vars);
+				return;
+			}
+			tags["gotoelse"] = false;
+
+		}
 		else if (CanBeAVarName(_first->str))
 		{
-			if (GetTagState(*tags, "const"))
+			if (GetTagState<bool>(tags, "const"))
 			{
 				vars[_first->str].first = Postfix::Calculate(_first->next->nextInside, _first->next->next, vars);
 				vars[_first->str].second = true;
@@ -767,7 +830,7 @@ private:
 				Run(_first->next->next, tags, vars);
 				return;
 			}
-			else if (GetTagState(*tags, "var"))
+			else if (GetTagState<bool>(tags, "var"))
 			{
 				std::list<std::string> newVarNames;
 
@@ -793,7 +856,7 @@ private:
 				Run(curr->next->next, tags, vars);
 				return;
 			}
-			else if (GetTagState(*tags, "program"))
+			else if (GetTagState<bool>(tags, "program"))
 			{
 				if (IsPartEqual(_first->next, ":="))
 				{
@@ -842,10 +905,12 @@ public:
 		
 		first = SplitStr(str);
 
+		TAGMAP tags;
+		CheckForErrors(first, tags, varTypes);
+
 		try
 		{
-			std::map<std::string, bool> tags;
-			CheckForErrors(first, &tags, varTypes);
+			
 		}
 		catch (CompilerExc ex)
 		{
@@ -867,10 +932,10 @@ public:
 			throw CompilerExc("Program is not compiled.");
 		}
 
-		std::map<std::string, bool> tags;
+		TAGMAP tags;
 		std::map<std::string, std::pair<Var*, bool>> vars;
 
-		Run(first, &tags, vars);
+		Run(first, tags, vars);
 
 		for (auto it = vars.begin(); it != vars.end(); it++)
 		{

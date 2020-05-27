@@ -9,5 +9,5 @@ struct Part
 	Part* nextInside;
 
 	Part* prev;
-	Part* prevInside;
+	//Part* prevInside;
 };
