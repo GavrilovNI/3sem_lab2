@@ -16,7 +16,7 @@ void Function::CheckOnCompile(std::string FuncName, std::list<std::pair<Var::_Ty
 	}
 }
 
-Var* Function::Calculate(std::string FuncName, std::list<Var*> args)
+Var* Function::Calculate(std::string FuncName, std::list<std::pair<Var*, bool>> args)
 {
 	return nullptr;
 }
