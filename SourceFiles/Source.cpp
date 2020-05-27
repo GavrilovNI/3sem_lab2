@@ -3,6 +3,10 @@
 #include "../HeaderFiles/Compiler.h"
 #include <fstream>
 #include <streambuf>
+#include <typeindex>
+#include <any>
+
+#include<variant>
 
 using namespace std;
 /*
@@ -35,17 +39,10 @@ struct EqualExists
 	enum { value = (sizeof(Check(*(T*)(0) == *(Arg*)(0))) != sizeof(No)) };
 };
 */
+
+
 int main()
 {
-	/*cout << EqualExists<Foo, int>::value<<endl;
-	cout << HasUsedMemoryMethod<Foo>::Has << endl;
-
-	string x[5]{"a","db","c","d","e"};
-
-	cout << sizeof(x) / sizeof(string)<<endl;
-
-	*/
-
 	std::ifstream t("../prog.pas");
 	if (!t.is_open()) return -1;
 	std::string str;
@@ -58,6 +55,20 @@ int main()
 		std::istreambuf_iterator<char>());
 
 	Compiler c;
-	c.Compile(str);
-	
+
+	try
+	{
+		c.Compile(str);
+		c.Run();
+	}
+	catch (CompilerExc ex)
+	{
+		//compile error
+		cout << ex.what();
+	}
+	catch (...)
+	{
+		throw "";
+	}
+
 }
