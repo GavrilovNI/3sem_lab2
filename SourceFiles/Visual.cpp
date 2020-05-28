@@ -1,7 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "../HeaderFiles/Visual.h"
 #include <conio.h>
 #include <algorithm>
 #include <math.h>
+#include<fstream>
+#include <streambuf>
+#include "../HeaderFiles/Compiler.h"
 
 #define COMMAND_KEYS 224
 #define KEY_UP 72
@@ -17,12 +22,11 @@
 
 using namespace std;
 
-/*
+
 string Visual::InputStr(string info, bool goBack=false)
 {
-	return "";
-	/*Vector2i prevPos = console.Where();
-	console.GotoXY(0, max(tableManager.GetCount(), consoleSize.y - 1));
+	Vector2i prevPos = console.Where();
+	console.GotoXY(0, consoleSize.y - 1);
 
 	UpdateMenu();
 
@@ -105,36 +109,6 @@ string Visual::InputStr(string info, bool goBack=false)
 				}
 			}
 		}
-		else if (input == KEY_TAB)
-		{
-			int curPos = console.WhereX() - startX;
-			string leftStr = result.substr(0, curPos);
-			int argNum = count(leftStr.begin(), leftStr.end(), ' ') + 1;
-			int argStart = leftStr.find_last_of(' ') + 1;
-			string arg = result.substr(argStart, curPos - argStart);
-
-			if (tabNumOfClick==0)
-			{
-				tabPart = arg;
-			}
-			string newStr = tableManager.FindNameByPart(tabPart, tabNumOfClick);
-
-			if (newStr == "")
-			{
-				tabNumOfClick = 0;
-				newStr = tableManager.FindNameByPart(tabPart, tabNumOfClick);
-			}
-
-			if (newStr != "")
-			{
-				result.replace(argStart, arg.length(), newStr);
-				console.GotoXY(startX+argStart, console.WhereY());
-				console.ClrEol();
-				cout << result.substr(argStart);
-				tabNumOfClick++;
-			}
-			continue;
-		}
 		else if (input == KEY_ENTER)
 		{
 			console.GotoXY(0, console.WhereY());
@@ -175,23 +149,72 @@ string Visual::InputStr(string info, bool goBack=false)
 		tabNumOfClick = 0;
 	}
 	
-	throw "Must not be there";*//*
+	throw "Must not be there";
 }
 
 bool Visual::OnMenuPressed()
 {
 	switch (curMenu)
 	{
-	case menus::CreateOrEditProgram:
+	case menus::EditProgram:
 		{
-			
+			std::string name = InputStr("Âגוהטעו טלÿ ןנמדנאללû")+".pas";
+			bool fileExist = false;
+			if (FILE* file = std::fopen(name.c_str(), "r")) {
+				fclose(file);
+				fileExist = true;
+			}
+			if (!fileExist)
+			{
+				std::ofstream outfile(name);
+			}
+			system(std::string("notepad \"" + name + "\"").c_str());
+
+			console.ClrLine();
+			UpdateMenu();
 		}
 		break;
 	case menus::CompileAndRunProgram:
-	{
+		{
+			std::string name = InputStr("Âגוהטעו טלÿ ןנמדנאללû");
 
-	}
-	break;
+			ifstream file;
+			file.open(name+".pas");
+			if (file.fail())
+			{
+				std::cout << "ןנמדנאללא םו םאיהוםא";
+				break;
+			}
+
+			std::string programStr((std::istreambuf_iterator<char>(file)),
+									std::istreambuf_iterator<char>());
+
+			file.close();
+			try
+			{
+				Compiler c;
+				c.Compile(programStr);
+				c.Run();
+				std::cout << "program ends...";
+				std::cin.sync();
+				std::cin.ignore();
+				console.ClrScr();
+				UpdateMenu();
+			}
+			catch (CompilerExc exc)
+			{
+				std::cout << "Exception: " + std::string(exc.what()) << std::endl;
+			}
+			catch (char* exc)
+			{
+				std::cout << "Exception: " + std::string(exc) << std::endl;
+			}
+			catch (...)
+			{
+				std::cout << "Unknown exception"<< std::endl;
+			}
+		}
+		break;
 	case menus::Exit:
 		return true;
 	default:
@@ -286,10 +309,3 @@ void Visual::UpdateMenu()
 
 	prevMenuPos = pos;
 }
-
-
-
-
-
-
-*/

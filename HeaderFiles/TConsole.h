@@ -1,6 +1,6 @@
 #pragma once
-//#include<windows.h>
-/*#include<iostream>
+#include<windows.h>
+#include<iostream>
 
 enum class Colors
 {
@@ -94,12 +94,23 @@ public:
     //функция очистки экрана
     void ClrScr()
     {
-        LPDWORD NOAW;
+        DWORD NOAW;
         ZeroMemory(&NOAW, sizeof(NOAW));
         ScreenBufInfo.dwCursorPosition.X = 0;
         ScreenBufInfo.dwCursorPosition.Y = 0;
         FillConsoleOutputCharacter(OutputHandle, ' ', ScreenBufInfo.dwSize.X * ScreenBufInfo.dwSize.Y,
-            ScreenBufInfo.dwCursorPosition, NOAW);
+            ScreenBufInfo.dwCursorPosition, &NOAW);
+        GotoXY(0, 0);
+    }
+
+    void ClrLine()
+    {
+        GetConsoleScreenBufferInfo(OutputHandle, &ScreenBufInfo);
+        DWORD NOAW;
+        ZeroMemory(&NOAW, sizeof(NOAW));
+        ScreenBufInfo.dwCursorPosition.X = 0;
+        FillConsoleOutputCharacter(OutputHandle, ' ', ScreenBufInfo.dwSize.X,
+            ScreenBufInfo.dwCursorPosition, &NOAW);
         GotoXY(0, 0);
     }
     //функция задержки выполнения
@@ -299,4 +310,3 @@ public:
         return Vector2i(x, y);
     }
 };
-*/
