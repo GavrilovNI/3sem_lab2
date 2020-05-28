@@ -598,7 +598,7 @@ private:
 					}
 
 					Var::_Type t = Postfix::CheckOnCompile(equalSign->nextInside, equalSign->next, varTypes);
-					if (varTypes[_first->str].first != t)
+					if (!Var::CanCast(t, varTypes[_first->str].first))
 					{
 						throw CompilerExc("cant convert from '" + Var::GetTypeName(t) + "' to '" + Var::GetTypeName(varTypes[_first->str].first) + "'");
 					}
@@ -837,7 +837,11 @@ private:
 
 					Var* newVar= Postfix::Calculate(equalSign->nextInside, equalSign->next, vars);
 
-					vars[_first->str] = pair<Var*, bool>(newVar, false);
+					Var::Cast(vars[_first->str].first, newVar);
+
+					delete newVar;
+
+					//vars[_first->str] = pair<Var*, bool>(newVar, false);
 
 					Run(equalSign->next, tags, vars);
 					return;

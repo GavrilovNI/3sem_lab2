@@ -15,6 +15,14 @@ public:
 	};
 
 	
+	static bool CanCast(_Type from, _Type to)
+	{
+		return from == to;
+	}
+	static void Cast(Var* from, Var* to)
+	{
+		throw "";
+	}
 	static Var* CreateCopy(Var* v);
 	static Var* Assign(std::string);
 	_Type GetType();

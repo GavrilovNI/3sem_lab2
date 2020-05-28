@@ -451,6 +451,8 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 	list<string> prefix = ToList(start, end);
 	//if there are no symbols in line after "=" or ":="
 	
+	list<Var*> toDelete;
+
 	list<string> postfix = ToPostfix(prefix);
 	//string str = "";
 	bool F = true;
@@ -542,6 +544,7 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 			{
 				tmp = *Oper1 % Oper2;
 			}
+			toDelete.push_back(tmp);
 			tmpOperand.push(tmp);
 		}
 		else
@@ -555,7 +558,9 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 			}
 			else
 			{
-				tmpOperand.push(Var::Assign(*it));
+				Var* _var = Var::Assign(*it);
+				toDelete.push_back(_var);
+				tmpOperand.push(_var);
 				F = true;
 			}
 			if (!F)
@@ -565,5 +570,15 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 		}
 		it++;
 	}
-	return Var::CreateCopy(tmpOperand.top());
+
+
+
+	Var* result = Var::CreateCopy(tmpOperand.top());
+
+	for (auto it = toDelete.begin(); it != toDelete.end(); it++)
+	{
+		delete (*it);
+	}
+
+	return result;
 }
