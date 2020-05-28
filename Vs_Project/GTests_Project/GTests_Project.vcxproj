@@ -36,7 +36,10 @@
     <ClCompile Include="..\..\SourceFiles\Compiler.cpp" />
     <ClCompile Include="..\..\SourceFiles\Function.cpp" />
     <ClCompile Include="..\..\SourceFiles\Postfix.cpp" />
+    <ClCompile Include="..\..\SourceFiles\Table.cpp" />
+    <ClCompile Include="..\..\SourceFiles\TableHash.cpp" />
     <ClCompile Include="..\..\SourceFiles\Var.cpp" />
+    <ClCompile Include="..\..\SourceFiles\Visual.cpp" />
     <ClCompile Include="..\..\Tests\Test_Compiler.cpp" />
   </ItemGroup>
   <ItemGroup>
