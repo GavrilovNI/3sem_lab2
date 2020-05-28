@@ -532,7 +532,7 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 			}
 			else if (*it == "not")
 			{
-				tmp = !(*Oper1);
+				tmp = !(*Oper2);
 			}
 			else if (*it == "mod")
 			{
@@ -565,5 +565,5 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 		}
 		it++;
 	}
-	return tmpOperand.top();
+	return Var::CreateCopy(tmpOperand.top());
 }

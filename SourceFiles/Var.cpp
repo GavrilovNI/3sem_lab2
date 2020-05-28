@@ -4,6 +4,21 @@ using namespace std;
 
 const std::string Var::typeName[static_cast<int>(5)] = {"integer", "double", "boolean", "string" , "void"};
 
+Var* Var::CreateCopy(Var* v)
+
+{
+	if (v->GetType() == _Type::_int)
+		return new _Int(dynamic_cast<_Int*>(v)->value);
+	if (v->GetType() == _Type::_double)
+		return new _Double(dynamic_cast<_Double*>(v)->value);
+	if (v->GetType() == _Type::_bool)
+		return new _Bool(dynamic_cast<_Bool*>(v)->value);
+	if (v->GetType() == _Type::_string)
+		return new _String(dynamic_cast<_String*>(v)->value);
+
+	throw "unidentified type";
+}
+
 Var* Var::Assign(string v)
 {
 	if (v[0] == '\'')
@@ -84,9 +99,18 @@ std::string Var::GetTypeName(_Type t)
 
 Var* Var::CreateVarByType(_Type t)
 {
-	Var *res = new Var;
-	res->_type = t;
-	return res;
+	switch (t)
+	{
+	case _Type::_int:
+		return new _Int();
+	case _Type::_double:
+		return new _Double();
+	case _Type::_bool:
+		return new _Bool();
+	case _Type::_string:
+		return new _String();
+	}
+	throw "an error";
 }
 
 Var* _Int::operator+ (Var* v)

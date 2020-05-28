@@ -24,10 +24,7 @@ public:
             {
                 if (it->first->GetType() == Var::_Type::_string)
                 {
-                    std::string tmp;
-                    std::cin >> tmp;
-
-                    //((_String*)(it->first))->value = "asd";// std::string(tmp);
+                    std::cin >> ((_String*)(it->first))->value;
                 }
                 else if (it->first->GetType() == Var::_Type::_int)
                 {
@@ -53,6 +50,7 @@ public:
 
         if (FuncName == "write" || FuncName == "writeln")
         {
+            
             for (auto it = args.begin(); it != args.end(); it++)
             {
                 std::cout << it->first->ToString();

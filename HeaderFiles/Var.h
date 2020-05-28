@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <ostream>
-
+#include <sstream>
 
 
 class Var
@@ -14,6 +14,8 @@ public:
 		_int, _double, _bool, _string, _void
 	};
 
+	
+	static Var* CreateCopy(Var* v);
 	static Var* Assign(std::string);
 	_Type GetType();
 	static _Type GetTypeByString(std::string);
@@ -158,7 +160,10 @@ public:
 	
 	std::string ToString() override
 	{
-		return std::to_string(value);
+		std::ostringstream out;
+		out.precision(3);
+		out << std::fixed << value;
+		return out.str();
 	}
 
 

@@ -395,7 +395,7 @@ private:
 			CheckForErrors(_first->nextInside, tags, varTypes);
 			return;
 		}
-		else if (_first->str == "begin" && tags.count("begin")==0)
+		else if (_first->str == "begin" && !GetTagState<bool>(tags, "program"))
 		{
 			tags["const"] = false;
 			tags["var"] = false;
@@ -416,27 +416,13 @@ private:
 			return;
 		}
 
-		/*if (_first->str=="(")
-		{
-			if (_first->next == nullptr || _first->next->str != ")")
-			{
-				throw "compilation error";
-			}
-		}
-		else */if (_first->str == ")")
+		if (_first->str == ")")
 		{
 			if (!IsPartEqual(_first->prev, "("))
 			{
 				throw NotExpectedExc(_first->str);
 			}
 		}
-		/*else if (_first->str=="begin")
-		{
-			if (_first->next == nullptr || (_first->next->str != "end" && _first->next->str!="end."))
-			{
-				throw "compilation error";
-			}
-		}*/
 		else if (_first->str == "end")
 		{
 			if (!IsPartEqual(_first->prev, "begin"))
@@ -478,28 +464,6 @@ private:
 			CheckForErrors(_first->next->next, tags, varTypes);
 			return;
 		}
-		/*else if (_first->str == "="  && GetTagState(*tags, "const"))
-		{
-			if (_first->nextInside == nullptr)
-			{
-				throw "compilation error";
-			}
-
-			Part* varPart = _first->prev;
-			if (varPart == nullptr)
-			{
-				throw "compilation error";
-			}
-			if (varTypes.count(varPart->str) != 0)
-			{
-				throw "compilation error";
-			}
-
-			if (varTypes[varPart->str]._first != Postfix::CheckOnCompile(_first, _first->next, varTypes))
-			{
-				throw "compilation error";
-			}
-		}*/
 		else if (_first->str == "if")
 		{
 			/*if (!IsPartEqual(_first->next, "then"))
@@ -543,7 +507,6 @@ private:
 			CheckForErrors(_first->next, tags, varTypes);
 			return;
 		}
-		
 		else if (CanBeAVarName(_first->str))
 		{
 			if (GetTagState<bool>(tags, "const"))
@@ -654,6 +617,13 @@ private:
 		}
 		else
 		{
+			//go through
+			if (_first->str == "begin")
+			{
+				CheckForErrors(_first->nextInside, tags, varTypes);
+				return;
+			}
+
 			throw NotExpectedExc(_first->str);
 		}
 
@@ -689,7 +659,7 @@ private:
 
 
 	//dont call this on compile
-	static Part* GetEndForIf(Part* thenPart)
+	/*static Part* GetEndForIf(Part* thenPart)
 	{
 		if (thenPart->next->str == "begin")
 		{
@@ -708,6 +678,8 @@ private:
 			return thenPart;
 		}
 	}
+	*/
+
 
 	void Run(Part* _first, TAGMAP tags, std::map<std::string, std::pair<Var*, bool>>& vars)
 	{
@@ -736,7 +708,7 @@ private:
 			Run(_first->nextInside, tags, vars);
 			return;
 		}
-		else if (_first->str == "begin" && tags.count("begin") == 0)
+		else if (_first->str == "begin" && !GetTagState<bool>(tags, "program"))
 		{
 			tags["const"] = false;
 			tags["var"] = false;
@@ -746,13 +718,14 @@ private:
 			return;
 		}
 
-		std::string passthrough[]{ ";",")","end","end.","then" };
+		
 
 		if (_first->str == ";")
 		{
 			tags["gotoelse"] = false;
 		}
 
+		std::string passthrough[]{ ";",")","end","end.","then" };
 		auto lastPT = passthrough + sizeof(passthrough) / sizeof(std::string);
 		if (std::find(passthrough, lastPT, _first->str) != lastPT)
 		{
