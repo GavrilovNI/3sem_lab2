@@ -9,36 +9,6 @@
 #include<variant>
 
 using namespace std;
-/*
-struct Foo
-{
-	int xx(int x) const { return x; }
-   bool operator==(int) const {}
-   void operator()(std::string) const {}
-};
-
-template<typename T>
-struct HasUsedMemoryMethod
-{
-	template<typename U, int(U::*)(int x) const> struct SFINAE {};
-	template<typename U> static char Test(SFINAE<U, &U::xx>*);
-	template<typename U> static int Test(...);
-	static const bool Has = sizeof(Test<T>(0)) == sizeof(char);
-};
-
-
-class No { bool b[2]; };
-template<typename T, typename Arg> No operator== (const T&, const Arg&);
-
-bool Check(...);
-No& Check(const No&);
-
-template <typename T, typename Arg = T>
-struct EqualExists
-{
-	enum { value = (sizeof(Check(*(T*)(0) == *(Arg*)(0))) != sizeof(No)) };
-};
-*/
 
 
 int main()
@@ -56,12 +26,10 @@ int main()
 
 	Compiler c;
 
-	c.Compile(str);
-	c.Run();
-
 	try
 	{
-		
+		c.Compile(str);
+		c.Run();
 	}
 	catch (CompilerExc ex)
 	{

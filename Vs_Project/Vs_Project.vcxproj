@@ -148,6 +148,7 @@
     <ClInclude Include="..\HeaderFiles\Var.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\SourceFiles\Compiler.cpp" />
     <ClCompile Include="..\SourceFiles\Function.cpp" />
     <ClCompile Include="..\SourceFiles\Postfix.cpp" />
     <ClCompile Include="..\SourceFiles\Source.cpp" />

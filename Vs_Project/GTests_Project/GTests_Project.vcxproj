@@ -33,6 +33,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <ClCompile Include="..\..\SourceFiles\Compiler.cpp" />
     <ClCompile Include="..\..\SourceFiles\Function.cpp" />
     <ClCompile Include="..\..\SourceFiles\Postfix.cpp" />
     <ClCompile Include="..\..\SourceFiles\Var.cpp" />
