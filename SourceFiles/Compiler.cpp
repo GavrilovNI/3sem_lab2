@@ -3,6 +3,26 @@
 
 #pragma region StaticRegion
 
+bool CompilerUtility::GetTagState(TAGMAP& tags, std::string name)
+{
+	if (tags.count(name) == 0)
+	{
+		tags[name] = false;
+	}
+
+	return tags[name];
+
+
+	/*if (tags.count(name) == 0)
+	{
+		if (std::is_same<T, int>::value)
+			tags[name] = 0;
+		else
+			tags[name] = false;
+	}
+	return std::get<T>(tags[name]);*/
+}
+
 bool Compiler::CanBeAVarName(std::string name)
 {
 	if (name.empty())
@@ -44,7 +64,7 @@ bool Compiler::IsPartEqual(Part* part, std::string str)
 		return part->str == str;
 }
 
-void Compiler::MakeFine(std::list<std::string>& words)
+void CompilerUtility::MakeFine(std::list<std::string>& words)
 {
 	bool quoteOpened = false;
 	std::string inQuotesStr = "";
@@ -98,7 +118,7 @@ void Compiler::MakeFine(std::list<std::string>& words)
 	}
 }
 
-Part* Compiler::SplitStr(std::string str)
+Part* CompilerUtility::SplitStr(std::string str)
 {
 	std::string chars[21]{ " ","\n","\t",";",",","'","\"",":=","(",")","+","-","*","/","=","<>","<=","<",">=",">",":" };
 
@@ -136,7 +156,7 @@ Part* Compiler::SplitStr(std::string str)
 	return _first;
 }
 
-bool Compiler::IsEndWordFor(std::string start, std::string end, TAGMAP tags)
+bool CompilerUtility::IsEndWordFor(std::string start, std::string end, TAGMAP tags)
 {
 	if (GetTagState(tags, "equalParts"))
 	{
@@ -190,7 +210,7 @@ bool Compiler::IsEndWordFor(std::string start, std::string end, TAGMAP tags)
 	return true;
 }
 
-Part* Compiler::GoToNextPart(Part* part, std::list<std::string>* words, TAGMAP& tags)
+Part* CompilerUtility::GoToNextPart(Part* part, std::list<std::string>* words, TAGMAP& tags)
 {
 	if (part == nullptr)
 	{
@@ -314,9 +334,9 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 
 	if (_first->str == "program")
 	{
-		if (GetTagState(tags, "const") ||
-			GetTagState(tags, "var") ||
-			GetTagState(tags, "program"))
+		if (CompilerUtility::GetTagState(tags, "const") ||
+			CompilerUtility::GetTagState(tags, "var") ||
+			CompilerUtility::GetTagState(tags, "program"))
 		{
 			throw NotExpectedExc(_first->str);
 		}
@@ -336,7 +356,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 	}
 	if (_first->str == "const")
 	{
-		if (GetTagState(tags, "program"))
+		if (CompilerUtility::GetTagState(tags, "program"))
 		{
 			throw NotExpectedExc(_first->str);
 		}
@@ -351,7 +371,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 	}
 	else if (_first->str == "var")
 	{
-		if (GetTagState(tags, "program"))
+		if (CompilerUtility::GetTagState(tags, "program"))
 		{
 			throw NotExpectedExc(_first->str);
 		}
@@ -365,7 +385,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 		CheckForErrors(_first->nextInside, tags, varTypes);
 		return;
 	}
-	else if (_first->str == "begin" && !GetTagState(tags, "program"))
+	else if (_first->str == "begin" && !CompilerUtility::GetTagState(tags, "program"))
 	{
 		tags["const"] = false;
 		tags["var"] = false;
@@ -466,7 +486,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 		}
 
 		TAGMAP tmp;
-		if (_first->nextInside == nullptr || IsEndWordFor("then", _first->nextInside->str, tmp))
+		if (_first->nextInside == nullptr || CompilerUtility::IsEndWordFor("then", _first->nextInside->str, tmp))
 		{
 			throw ExpectedExc("body of if");
 		}
@@ -483,7 +503,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 	}
 	else if (CanBeAVarName(_first->str))
 	{
-		if (GetTagState(tags, "const"))
+		if (CompilerUtility::GetTagState(tags, "const"))
 		{
 			if (_first->next->str != "=")
 			{
@@ -505,7 +525,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 			CheckForErrors(_first->next->next, tags, varTypes);
 			return;
 		}
-		else if (GetTagState(tags, "var"))
+		else if (CompilerUtility::GetTagState(tags, "var"))
 		{
 			std::list<std::string> newVarNames;
 
@@ -552,7 +572,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 			CheckForErrors(curr->next->next, tags, varTypes);
 			return;
 		}
-		else if (GetTagState(tags, "program"))
+		else if (CompilerUtility::GetTagState(tags, "program"))
 		{
 			if (IsPartEqual(_first->next, ":="))
 			{
@@ -612,7 +632,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 	}
 }
 
-void Compiler::Clear(Part* p)
+void CompilerUtility::Clear(Part* p)
 {
 	while (p != nullptr)
 	{
@@ -657,7 +677,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 		Run(_first->nextInside, tags, vars);
 		return;
 	}
-	else if (_first->str == "begin" && !GetTagState(tags, "program"))
+	else if (_first->str == "begin" && !CompilerUtility::GetTagState(tags, "program"))
 	{
 		tags["const"] = false;
 		tags["var"] = false;
@@ -734,7 +754,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 	}
 	else if (_first->str == "else")
 	{
-		if (!GetTagState(tags, "gotoelse"))
+		if (!CompilerUtility::GetTagState(tags, "gotoelse"))
 		{
 			Run(_first->next, tags, vars);
 			return;
@@ -744,7 +764,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 	}
 	else if (CanBeAVarName(_first->str))
 	{
-		if (GetTagState(tags, "const"))
+		if (CompilerUtility::GetTagState(tags, "const"))
 		{
 			Var* tmp = Postfix::Calculate(_first->next->nextInside, _first->next->next, vars);
 			std::pair<Var*, bool> p = std::make_pair(tmp, true);
@@ -755,7 +775,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 			Run(_first->next->next, tags, vars);
 			return;
 		}
-		else if (GetTagState(tags, "var"))
+		else if (CompilerUtility::GetTagState(tags, "var"))
 		{
 			std::list<std::string> newVarNames;
 
@@ -784,7 +804,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 			Run(curr->next->next, tags, vars);
 			return;
 		}
-		else if (GetTagState(tags, "program"))
+		else if (CompilerUtility::GetTagState(tags, "program"))
 		{
 			if (IsPartEqual(_first->next, ":="))
 			{
@@ -819,7 +839,7 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 
 void Compiler::Clear()
 {
-	Clear(first);
+	CompilerUtility::Clear(first);
 	first = nullptr;
 }
 
@@ -829,7 +849,7 @@ void Compiler::Compile(std::string str)
 	std::map<std::string, std::pair<Var::_Type, bool>> varTypes;
 
 
-	first = SplitStr(str);
+	first = CompilerUtility::SplitStr(str);
 
 	TAGMAP tags;
 	CheckForErrors(first, tags, varTypes);

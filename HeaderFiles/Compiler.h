@@ -12,52 +12,42 @@
 #include <variant>
 #include "../HeaderFiles/TableHash.h"
 
+using TAG = bool;
+using TAGMAP = std::map<std::string, TAG>;
 
-class Compiler
+class CompilerUtility
 {
-private:
-	
-	using TAG = bool;
-	using TAGMAP = std::map<std::string, TAG>;
+protected:
 
-
-
-	static bool GetTagState(TAGMAP& tags, std::string name)
-	{
-		if (tags.count(name) == 0)
-		{
-			tags[name] = false;
-		}
-
-		return tags[name];
-
-
-		/*if (tags.count(name) == 0)
-		{
-			if (std::is_same<T, int>::value)
-				tags[name] = 0;
-			else
-				tags[name] = false;
-		}
-		return std::get<T>(tags[name]);*/
-	}
-	static bool CanBeAVarName(std::string name);
-
-	static bool IsPartEqual(Part* part, std::string str);
-
-	static void MakeFine(std::list<std::string>& words);
-
-	static Part* SplitStr(std::string str);
+	static void Clear(Part* p);
 
 	static bool IsEndWordFor(std::string start, std::string end, TAGMAP tags);
 
 	static Part* GoToNextPart(Part* part, std::list<std::string>* words, TAGMAP& tags);
 
+	static bool GetTagState(TAGMAP& tags, std::string name);
+
+	static void MakeFine(std::list<std::string>& words);
+
+public:
+
+	static Part* SplitStr(std::string str);
+
+};
+
+class Compiler: public CompilerUtility
+{
+private:
+	
+	static bool CanBeAVarName(std::string name);
+
+	static bool IsPartEqual(Part* part, std::string str);
+
 	static std::list<std::pair<Part*, Part*>> GetArgumentsOfFuncCall(Part* bracket);
 
 	static void CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, std::pair<Var::_Type, bool>>& varTypes);
 
-	static void Clear(Part* p);
+	
 
 
 	static void Run(Part* _first, TAGMAP tags, TableHash& vars);
