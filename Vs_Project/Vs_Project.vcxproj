@@ -144,15 +144,22 @@
     <ClInclude Include="..\HeaderFiles\Function.h" />
     <ClInclude Include="..\HeaderFiles\Part.h" />
     <ClInclude Include="..\HeaderFiles\Postfix.h" />
+    <ClInclude Include="..\HeaderFiles\Table.h" />
+    <ClInclude Include="..\HeaderFiles\TableHash.h" />
+    <ClInclude Include="..\HeaderFiles\TConsole.h" />
     <ClInclude Include="..\HeaderFiles\TextSplitter.h" />
     <ClInclude Include="..\HeaderFiles\Var.h" />
+    <ClInclude Include="..\HeaderFiles\Visual.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SourceFiles\Compiler.cpp" />
     <ClCompile Include="..\SourceFiles\Function.cpp" />
     <ClCompile Include="..\SourceFiles\Postfix.cpp" />
     <ClCompile Include="..\SourceFiles\Source.cpp" />
+    <ClCompile Include="..\SourceFiles\Table.cpp" />
+    <ClCompile Include="..\SourceFiles\TableHash.cpp" />
     <ClCompile Include="..\SourceFiles\Var.cpp" />
+    <ClCompile Include="..\SourceFiles\Visual.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

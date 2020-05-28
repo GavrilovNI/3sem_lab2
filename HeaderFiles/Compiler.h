@@ -10,29 +10,36 @@
 #include "Function.h"
 #include "CompilerExceptions.h"
 #include <variant>
+#include "../HeaderFiles/TableHash.h"
+
 
 class Compiler
 {
 private:
 	
-	using TAG = std::variant<bool, int>;
+	using TAG = bool;
 	using TAGMAP = std::map<std::string, TAG>;
 
 
-	template<typename T>
-	static T GetTagState(TAGMAP& tags, std::string name)
+
+	static bool GetTagState(TAGMAP& tags, std::string name)
 	{
-
-
-
 		if (tags.count(name) == 0)
+		{
+			tags[name] = false;
+		}
+
+		return tags[name];
+
+
+		/*if (tags.count(name) == 0)
 		{
 			if (std::is_same<T, int>::value)
 				tags[name] = 0;
 			else
 				tags[name] = false;
 		}
-		return std::get<T>(tags[name]);
+		return std::get<T>(tags[name]);*/
 	}
 	static bool CanBeAVarName(std::string name);
 
@@ -53,7 +60,7 @@ private:
 	static void Clear(Part* p);
 
 
-	void Run(Part* _first, TAGMAP tags, std::map<std::string, std::pair<Var*, bool>>& vars);
+	static void Run(Part* _first, TAGMAP tags, TableHash& vars);
 
 	Part* first = nullptr;
 public:

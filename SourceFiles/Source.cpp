@@ -3,16 +3,17 @@
 #include "../HeaderFiles/Compiler.h"
 #include <fstream>
 #include <streambuf>
-#include <typeindex>
-#include <any>
+#include "../HeaderFiles/Visual.h"
+//#include<windows.h>
 
-#include<variant>
 
 using namespace std;
 
 
 int main()
 {
+	//Visual visual;
+	
 	std::ifstream t("../prog.pas");
 	if (!t.is_open()) return -1;
 	std::string str;
@@ -40,5 +41,5 @@ int main()
 	{
 		throw "";
 	}
-
+	
 }
