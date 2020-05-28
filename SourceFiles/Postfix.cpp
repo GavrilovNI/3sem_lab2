@@ -232,6 +232,7 @@ void Postfix::SetOperations()
 	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
 	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
 	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_double)));
 	posoperations.insert(std::make_pair("mod", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
 	posoperations.insert(std::make_pair("div", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
 

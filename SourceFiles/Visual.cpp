@@ -158,7 +158,7 @@ bool Visual::OnMenuPressed()
 	{
 	case menus::EditProgram:
 		{
-			std::string name = InputStr("Âגוהטעו טלÿ ןנמדנאללû")+".pas";
+			std::string name = InputStr("Âגוהטעו טלÿ ןנמדנאללû", true)+".pas";
 			bool fileExist = false;
 			if (FILE* file = std::fopen(name.c_str(), "r")) {
 				fclose(file);
@@ -196,23 +196,24 @@ bool Visual::OnMenuPressed()
 				c.Compile(programStr);
 				c.Run();
 				std::cout << "program ends...";
-				std::cin.sync();
-				std::cin.ignore();
-				console.ClrScr();
-				UpdateMenu();
 			}
 			catch (CompilerExc exc)
 			{
-				std::cout << "Exception: " + std::string(exc.what()) << std::endl;
+				std::cout << "Exception: " + std::string(exc.what())+"..." << std::endl;
 			}
 			catch (char* exc)
 			{
-				std::cout << "Exception: " + std::string(exc) << std::endl;
+				std::cout << "Exception: " + std::string(exc) + "..." << std::endl;
 			}
 			catch (...)
 			{
-				std::cout << "Unknown exception"<< std::endl;
+				std::cout << "Unknown exception..."<< std::endl;
 			}
+
+			std::cin.sync();
+			std::cin.ignore();
+			console.ClrScr();
+			UpdateMenu();
 		}
 		break;
 	case menus::Exit:

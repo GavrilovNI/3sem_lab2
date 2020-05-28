@@ -1,7 +1,7 @@
 #include<gtest/gtest.h>
 #include "..\HeaderFiles\Var.h"
 
-TEST(Var, default_constructor_gives_no_exception)
+/*TEST(Var, default_constructor_gives_no_exception)
 {
 	ASSERT_NO_THROW(Var v);
 }
@@ -185,4 +185,4 @@ TEST(Var, operator_concatination_works_properly)
 	v2 = Var::Assign("'ey'");
 	ASSERT_NO_THROW(v3 = *v1 + v2);
 	ASSERT_EQ(v3, Var::Assign("'Okey'"));
-}
+}*/
