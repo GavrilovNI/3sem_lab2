@@ -15,14 +15,8 @@ public:
 	};
 
 	
-	static bool CanCast(_Type from, _Type to)
-	{
-		return from == to;
-	}
-	static void Cast(Var* from, Var* to)
-	{
-		throw "";
-	}
+	static bool CanCast(_Type from, _Type to);
+	static void Cast(Var* from, Var* to);
 	static Var* CreateCopy(Var* v);
 	static Var* Assign(std::string);
 	_Type GetType();
@@ -32,71 +26,22 @@ public:
 
 	//virtual Var operator+ (Var& v);
 
-	virtual std::string ToString()
-	{
-		throw "Error";
-	}
-
-	virtual Var* operator+ (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator- (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator* (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator/ (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator% (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator&& (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator|| (Var*)
-	{
-		throw "Error";
-	}
-	virtual Var* operator== (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator!= (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator< (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator<= (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator> (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator>= (Var* v)
-	{
-		throw "Error";
-	}
-	virtual Var* operator! ()
-	{
-		throw "Error";
-	}
-	virtual Var* operator= (Var* v)
-	{
-		throw "Error";
-	}
+	virtual std::string ToString() { throw "Error"; }
+	virtual Var* operator+ (Var*) {throw "Error";}
+	virtual Var* operator- (Var*) { throw "Error"; }
+	virtual Var* operator* (Var*) { throw "Error"; }
+	virtual Var* operator/ (Var*) { throw "Error"; }
+	virtual Var* operator% (Var*) { throw "Error"; }
+	virtual Var* operator&& (Var*) { throw "Error"; }
+	virtual Var* operator|| (Var*) { throw "Error"; }
+	virtual Var* operator== (Var* v) { throw "Error"; }
+	virtual Var* operator!= (Var* v) { throw "Error"; }
+	virtual Var* operator< (Var* v) { throw "Error"; }
+	virtual Var* operator<= (Var* v) { throw "Error"; }
+	virtual Var* operator> (Var* v) { throw "Error"; }
+	virtual Var* operator>= (Var* v) { throw "Error"; }
+	virtual Var* operator! () { throw "Error"; }
+	virtual Var* operator= (Var* v) { throw "Error"; }
 
 protected:
 	_Type _type;
