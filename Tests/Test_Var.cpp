@@ -186,7 +186,5 @@ TEST(Var, operator_concatination_works_properly)
 	v1 = Var::Assign("'Ok'");
 	v2 = Var::Assign("'ey'");
 	ASSERT_NO_THROW(v3 = *v1 + v2);
-
 	ASSERT_EQ(dynamic_cast<_String*>(v3)->value, dynamic_cast<_String*>(Var::Assign("'Okey'"))->value);
 }
-
