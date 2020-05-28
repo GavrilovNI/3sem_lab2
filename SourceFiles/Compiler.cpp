@@ -204,7 +204,7 @@ bool CompilerUtility::IsEndWordFor(std::string start, std::string end, TAGMAP ta
 	}
 	else if (start == "else")
 	{
-		return end == "else" || end == ";";
+		return end == "else" || end == ";" || end == "if";
 	}
 
 	return true;
@@ -395,8 +395,15 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 		{
 			throw ExpectedExc("end.");
 		}
-
-		CheckForErrors(_first->nextInside, tags, varTypes);
+		
+		if (_first->nextInside == nullptr)
+		{
+			CheckForErrors(_first->next, tags, varTypes);
+		}
+		else
+		{
+			CheckForErrors(_first->nextInside, tags, varTypes);
+		}
 		return;
 	}
 
@@ -434,7 +441,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 		{
 			throw ExpectedExc(_first->next->str);
 		}
-		if (!IsPartEqual(_first->next->next->next, ";"))
+		if (!IsPartEqual(_first->next->next->next, ";") && !IsPartEqual(_first->next->next->next, "else"))
 		{
 			throw ExpectedExc(";");
 		}
@@ -469,7 +476,7 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 			throw ExpectedExc("condition");
 		}
 
-		if (Postfix::CheckOnCompile(_first->nextInside, _first->next, varTypes) != Var::_Type::_bool)
+		if (!Var::CanCast(Postfix::CheckOnCompile(_first->nextInside, _first->next, varTypes), Var::_Type::_bool))
 		{
 			throw CompilerExc("condition is not a bool");
 		}
@@ -496,6 +503,11 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 		if (!IsPartEqual(_first->prev, "then"))
 		{
 			throw NotExpectedExc(_first->str);
+		}
+
+		if (!IsPartEqual(_first->next,"if") && _first->nextInside == nullptr)
+		{
+			throw ExpectedExc("body of else");
 		}
 
 		CheckForErrors(_first->next, tags, varTypes);
@@ -531,12 +543,28 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 
 			Part* curr = _first;
 
+			bool wasComma = true;
+
 			while (curr->str != ":")
 			{
 				if (curr->str != ",")
 				{
+					if (!wasComma)
+					{
+						throw NotExpectedExc(curr->str);
+					}
+					if (!CanBeAVarName(curr->str))
+					{
+						throw CompilerExc(curr->str + " can't be a var name");
+					}
 					newVarNames.push_back(curr->str);
+					wasComma = false;
 				}
+				else
+				{
+					wasComma = true;
+				}
+
 				curr = curr->next;
 				if (curr == nullptr)
 				{
@@ -544,6 +572,10 @@ void Compiler::CheckForErrors(Part* _first, TAGMAP& tags, std::map<std::string, 
 				}
 			}
 
+			if (wasComma)
+			{
+				throw NotExpectedExc(",");
+			}
 
 			if (curr->next == nullptr || curr->next->str == ";")
 			{
@@ -756,7 +788,19 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 	{
 		if (!CompilerUtility::GetTagState(tags, "gotoelse"))
 		{
-			Run(_first->next, tags, vars);
+			if (_first->next->str == "if")
+			{
+				Part* nextPart = _first->next->next;
+				while (nextPart->str != ";")
+				{
+					nextPart = nextPart->next;
+				}
+				Run(nextPart, tags, vars);
+			}
+			else
+			{
+				Run(_first->next, tags, vars);
+			}
 			return;
 		}
 		tags["gotoelse"] = false;
@@ -845,28 +889,16 @@ void Compiler::Clear()
 
 void Compiler::Compile(std::string str)
 {
-
+	Clear();
 	std::map<std::string, std::pair<Var::_Type, bool>> varTypes;
 
 
 	first = CompilerUtility::SplitStr(str);
 
 	TAGMAP tags;
+
+	
 	CheckForErrors(first, tags, varTypes);
-
-	try
-	{
-
-	}
-	catch (CompilerExc ex)
-	{
-		Clear();
-		throw ex;
-	}
-	catch (...)
-	{
-		throw CompilerExc("exception, which should not be");
-	}
 
 
 }
