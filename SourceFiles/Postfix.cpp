@@ -1,12 +1,14 @@
 ﻿#include "../HeaderFiles/Postfix.h"
-
+#include "../HeaderFiles/CompilerExceptions.h"
+#include <string>
+#include <list>
 #include <stack>
 #include <iostream>
 
 
-list<string> Postfix::ToList(Part* start, Part* end)
+std::list<std::string> Postfix::ToList(Part* start, Part* end)
 {
-	list<string> tmp;
+	std::list<std::string> tmp;
 	auto it = start;
 	bool F = true;
 	if (it->str == "-")
@@ -53,9 +55,9 @@ list<string> Postfix::ToList(Part* start, Part* end)
 	return tmp;
 }
 
-bool Postfix::IsOperator(string sym)
+bool Postfix::IsOperator(std::string sym)
 {
-	list<string> operations{
+	std::list<std::string> operations{
 	"*",
 	"/",
 	"+",
@@ -75,9 +77,9 @@ bool Postfix::IsOperator(string sym)
 	return (find(operations.begin(), operations.end(), sym) != operations.end());
 }
 
-bool Postfix::BalanceBracket(list<string> prefix)
+bool Postfix::BalanceBracket(std::list<std::string> prefix)
 {
-	stack<char> check;
+	std::stack<char> check;
 	auto it = prefix.begin();
 	//ïîèñê 1-îé ñêîáêè, åñëè îíà çàêðûâàþùàÿñÿ, òî ðàññòàíîâêà íå êîððåêòíà
 	while ((it != prefix.end()) && (check.empty()))
@@ -127,7 +129,7 @@ bool Postfix::BalanceBracket(list<string> prefix)
 	return (count == 0) ? true : false;
 }
 
-bool Postfix::CheckOnCorrect(list<string> prefix)
+bool Postfix::CheckOnCorrect(std::list<std::string> prefix)
 {
 	auto it = prefix.begin();
 	auto itNext = it;
@@ -171,7 +173,7 @@ bool Postfix::CheckOnCorrect(list<string> prefix)
 	return true;
 }
 
-int Postfix::PriorityOperator(string s)
+int Postfix::PriorityOperator(std::string s)
 {
 	if ((s == "=") || (s == "<>") || (s == "<") || (s == ">") || (s == "<=") || (s == ">="))
 	{
@@ -205,92 +207,92 @@ int Postfix::PriorityOperator(string s)
 	{
 		return 6;
 	}
-	throw "uncorrect symbol";
+	throw CompilerExc("uncorrect symbol");
 }
 
 void Postfix::SetOperations()
 {
 	//tuple.first - left operand, tuple.second - rignt operand, tuple.third - result
-	posoperations.insert(make_pair("+", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
-	posoperations.insert(make_pair("+", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("+", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
-	posoperations.insert(make_pair("+", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("+", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_string)));
+	posoperations.insert(std::make_pair("+", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(std::make_pair("+", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("+", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("+", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("+", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_string)));
 
-	posoperations.insert(make_pair("-", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
-	posoperations.insert(make_pair("-", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("-", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
-	posoperations.insert(make_pair("-", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("-", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(std::make_pair("-", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("-", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("-", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
 
-	posoperations.insert(make_pair("*", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
-	posoperations.insert(make_pair("*", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("*", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
-	posoperations.insert(make_pair("*", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("*", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(std::make_pair("*", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("*", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("*", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
 
-	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
-	posoperations.insert(make_pair("/", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
-	posoperations.insert(make_pair("mod", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
-	posoperations.insert(make_pair("div", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("/", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_double)));
+	posoperations.insert(std::make_pair("mod", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
+	posoperations.insert(std::make_pair("div", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_int)));
 
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
-	posoperations.insert(make_pair("=", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("=", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<>", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<>", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair("<", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair("<=", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<=", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<=", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
-	posoperations.insert(make_pair("<=", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair("<=", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<=", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<=", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<=", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
+	posoperations.insert(std::make_pair("<=", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("<=", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair(">=", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">=", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">=", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
-	posoperations.insert(make_pair(">=", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">=", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">=", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">=", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">=", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
+	posoperations.insert(std::make_pair(">=", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">=", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair(">", make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">", make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">", make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
-	posoperations.insert(make_pair(">", make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
-	posoperations.insert(make_pair(">", make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">", std::make_tuple(Var::_Type::_int, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">", std::make_tuple(Var::_Type::_double, Var::_Type::_int, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">", std::make_tuple(Var::_Type::_int, Var::_Type::_double, Var::_Type::_bool))); 
+	posoperations.insert(std::make_pair(">", std::make_tuple(Var::_Type::_double, Var::_Type::_double, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair(">", std::make_tuple(Var::_Type::_string, Var::_Type::_string, Var::_Type::_bool)));
 
-	posoperations.insert(make_pair("and", make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
-	posoperations.insert(make_pair("or", make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
-	posoperations.insert(make_pair("not", make_tuple(Var::_Type::_void, Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("and", std::make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("or", std::make_tuple(Var::_Type::_bool, Var::_Type::_bool, Var::_Type::_bool)));
+	posoperations.insert(std::make_pair("not", std::make_tuple(Var::_Type::_void, Var::_Type::_bool, Var::_Type::_bool)));
 
 }
 
-list<string> Postfix::ToPostfix(list<string> prefix)
+std::list<std::string> Postfix::ToPostfix(std::list<std::string> prefix)
 {
-	stack<string> stackPhrase;
-	list<string> postfix;
+	std::stack<std::string> stackPhrase;
+	std::list<std::string> postfix;
 	
 	if (prefix.size() > 1)
 	{
 		if (!CheckOnCorrect(prefix)) //expression validation
-			throw "error compile";
+			throw CompilerExc("uncorrect expression");
 	}
 	else
 	{
 		if ((IsOperator(prefix.front())) || (prefix.front() == "(") || (prefix.front() == ")"))
-			throw "error compile";
+			throw CompilerExc("uncorrect expression");
 	}
 	bool F = true;
 	for (auto it = prefix.begin(); it != prefix.end(); ++it)
@@ -354,7 +356,7 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 {
 	SetOperations();//Set possible operations  between types
 
-	list<string> prefix;
+	std::list<std::string> prefix;
 
 	if (start != nullptr)
 	{
@@ -362,12 +364,12 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 	}
 	else
 	{
-		throw "compile error";
+		throw CompilerExc("uncorrect expression");
 	}
 	//if there are no symbols in line after "=" or ":="
-	list<string> postfix = ToPostfix(prefix);
+	std::list<std::string> postfix = ToPostfix(prefix);
 
-	stack<Var::_Type> tmpOperand;
+	std::stack<Var::_Type> tmpOperand;
 	Var::_Type tmp;
 	auto it = postfix.begin();
 	while ((it) != postfix.end())
@@ -397,14 +399,14 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 				Oper1find = true;
 			}
 			if (!(Oper1find && Oper2find))
-				throw "can't compile";
+				throw CompilerExc("uncorrect expression");
 
 			auto iterMap = posoperations.equal_range(*it);
 			bool F = false;
 			for (auto itrMap = iterMap.first; itrMap != iterMap.second; ++itrMap)
 			{
-				auto pair = make_pair(std::get<0>(itrMap->second), std::get<1>(itrMap->second));
-				if (pair == make_pair(Oper1, Oper2))
+				auto pair = std::make_pair(std::get<0>(itrMap->second), std::get<1>(itrMap->second));
+				if (pair == std::make_pair(Oper1, Oper2))
 				{
 					tmp = std::get<2>(itrMap->second);
 					F = true;
@@ -413,7 +415,7 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 			}
 			if (!F)
 			{
-				throw "can't compile";
+				throw CompilerExc("uncorrect expression");
 			}
 			tmpOperand.push(tmp);
 		}
@@ -440,23 +442,23 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 	}
 	else
 	{
-		throw "error compile";
+		throw CompilerExc("uncorrect expression");
 	}
 	return var;
 }
 //Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, Var*> vars)
 
-Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*, bool>> vars)
+Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, std::pair<Var*, bool>> vars)
 {
-	list<string> prefix = ToList(start, end);
+	std::list<std::string> prefix = ToList(start, end);
 	//if there are no symbols in line after "=" or ":="
 	
-	list<Var*> toDelete;
+	std::list<Var*> toDelete;
 
-	list<string> postfix = ToPostfix(prefix);
+	std::list<std::string> postfix = ToPostfix(prefix);
 	//string str = "";
 	bool F = true;
-	stack<Var*> tmpOperand;
+	std::stack<Var*> tmpOperand;
 	Var* tmp;
 	auto it = postfix.begin();
 	while ((it) != postfix.end())
@@ -482,7 +484,7 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 				Oper1find = true;
 			}
 			if (!(Oper1find && Oper2find))
-				throw "False";
+				throw CompilerExc("uncorrect expression");
 			if (*it == "+")
 			{
 				tmp = *Oper1 + Oper2;
@@ -565,7 +567,7 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, pair<Var*,
 			}
 			if (!F)
 			{
-				throw "error calculate";
+				throw CompilerExc("uncorrect expression");
 			}
 		}
 		it++;
