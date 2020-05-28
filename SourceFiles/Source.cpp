@@ -1,22 +1,26 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <string>
 #include <iostream>
 #include "../HeaderFiles/Compiler.h"
 #include <fstream>
 #include <streambuf>
 #include "../HeaderFiles/Visual.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <istream>
 //#include<windows.h>
 
 
-using namespace std;
+//using namespace std;
+
 
 
 int main()
 {
-	//Part* f = CompilerUtility::SplitStr(":=1+2.0;");
-
-	//Visual visual;
+	Visual visual;
 	
-	std::ifstream t("../prog.pas");
+	/*std::ifstream t("../prog.pas");
 	if (!t.is_open()) return -1;
 	std::string str;
 
@@ -37,11 +41,11 @@ int main()
 	catch (CompilerExc ex)
 	{
 		//compile error
-		cout << ex.what();
+		std::cout << ex.what();
 	}
 	catch (...)
 	{
 		throw "";
-	}
+	}*/
 	
 }

@@ -3,14 +3,15 @@
 #include "TConsole.h"
 #include <list>
 
-/*
+
 class Visual
 {
 private:
-	
+	char allowedChars[1]{ '.' };
+
 	enum class menus
 	{
-		CreateOrEditProgram,
+		EditProgram,
 		CompileAndRunProgram,
 		Exit,
 		menusCount
@@ -43,4 +44,3 @@ public:
 
 };
 
-*/
