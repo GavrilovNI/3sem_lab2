@@ -12,6 +12,8 @@ using namespace std;
 
 int main()
 {
+	//Part* f = CompilerUtility::SplitStr(":=1+2.0;");
+
 	//Visual visual;
 	
 	std::ifstream t("../prog.pas");

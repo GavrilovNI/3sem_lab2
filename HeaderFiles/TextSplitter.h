@@ -21,7 +21,7 @@ public:
 				std::string a = "";
 				
 
-				if (str.length() > i + chars[j].length() && str.substr(i, chars[j].length()) == chars[j])
+				if (str.length() >= i + chars[j].length() && str.substr(i, chars[j].length()) == chars[j])
 				{
 					if (word.length() != 0)
 					{
