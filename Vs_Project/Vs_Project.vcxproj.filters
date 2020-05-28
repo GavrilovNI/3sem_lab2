@@ -50,5 +50,8 @@
     <ClCompile Include="..\SourceFiles\Function.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\SourceFiles\Compiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
