@@ -56,10 +56,12 @@ int main()
 
 	Compiler c;
 
+	c.Compile(str);
+	c.Run();
+
 	try
 	{
-		c.Compile(str);
-		c.Run();
+		
 	}
 	catch (CompilerExc ex)
 	{

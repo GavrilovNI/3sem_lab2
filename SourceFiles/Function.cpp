@@ -16,11 +16,6 @@ void Function::CheckOnCompile(std::string FuncName, std::list<std::pair<Var::_Ty
 	}
 }
 
-Var* Function::Calculate(std::string FuncName, std::list<std::pair<Var*, bool>> args)
-{
-	return nullptr;
-}
-
 bool Function::IsFuncName(std::string name)
 {
 	return !(std::find(funcNameList.begin(), funcNameList.end(), name) == funcNameList.end());
