@@ -15,19 +15,35 @@ void Var::Cast(Var* from, Var* to)
 	switch (from->_type)
 	{
 	case _Type::_int:
-		static_cast<_Int*>(from)->value = static_cast<_Int*>(to)->value;
+		switch (to->_type)
+		{
+		case _Type::_int:
+			static_cast<_Int*>(from)->value = static_cast<_Int*>(to)->value;
+			break;
+		case _Type::_double:
+			static_cast<_Int*>(from)->value = static_cast<_Double*>(to)->value;
+			break;
+		default:
+			throw "Error";
+		}
 		break;
 	case _Type::_double:
-		if (to->_type == _Type::_int)
-			static_cast<_Double*>(from)->value = static_cast<_Int*>(to)->value;
 		if (to->_type == _Type::_double)
 			static_cast<_Double*>(from)->value = static_cast<_Double*>(to)->value;
+		else
+			throw "Error";
 		break;
 	case _Type::_bool:
-		static_cast<_Bool*>(from)->value = static_cast<_Bool*>(to)->value;
+		if (to->_type == _Type::_bool)
+			static_cast<_Bool*>(from)->value = static_cast<_Bool*>(to)->value;
+		else
+			throw "Error";
 		break;
 	case _Type::_string:
-		static_cast<_String*>(from)->value = static_cast<_String*>(to)->value;
+		if (to->_type == _Type::_double)
+			static_cast<_String*>(from)->value = static_cast<_String*>(to)->value;
+		else
+			throw "Error";
 		break;
 	default:
 		throw "Error";
