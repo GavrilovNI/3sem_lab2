@@ -448,7 +448,7 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 }
 //Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, Var*> vars)
 
-Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, std::pair<Var*, bool>> vars)
+Var* Postfix::Calculate(Part* start, Part* end, TableHash& vars)
 {
 	std::list<std::string> prefix = ToList(start, end);
 	//if there are no symbols in line after "=" or ":="
@@ -552,10 +552,11 @@ Var* Postfix::Calculate(Part* start, Part* end, std::map<std::string, std::pair<
 		else
 		{
 			bool F = false;
-			auto v = vars.find(*it);
-			if (v != vars.end())
+			auto v = vars.Find(*it);
+			//auto v = vars.find(*it);
+			if (v != nullptr)
 			{
-				tmpOperand.push((v->second).first);
+				tmpOperand.push(v->first);
 				F = true;
 			}
 			else

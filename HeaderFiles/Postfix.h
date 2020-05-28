@@ -4,6 +4,7 @@
 #include <list>
 #include <tuple>
 
+#include "TableHash.h"
 #include "Part.h"
 
 //inline multimap<string, pair<Var::_Type, Var::_Type>> posoperations;
@@ -23,6 +24,6 @@ public:
 	static void SetOperations();	//set possible operations
 	static std::list<std::string> ToPostfix(std::list<std::string> prefix); //convert to postfix
 	static Var::_Type CheckOnCompile(Part* start, Part* end, std::map<std::string, std::pair<Var::_Type, bool>> vars);
-	static Var* Calculate(Part* start, Part* end, std::map<std::string, std::pair<Var*, bool>> vars);
+	static Var* Calculate(Part* start, Part* end, TableHash& vars);
 };
 

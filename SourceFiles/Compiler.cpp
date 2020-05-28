@@ -746,8 +746,11 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 	{
 		if (GetTagState(tags, "const"))
 		{
-			vars.Find(_first->str)->first = Postfix::Calculate(_first->next->nextInside, _first->next->next, vars);
-			vars.Find(_first->str)->second = true;
+			Var* tmp = Postfix::Calculate(_first->next->nextInside, _first->next->next, vars);
+			std::pair<Var*, bool> p = std::make_pair(tmp, true);
+			vars.Insert(_first->str, p);
+			//vars.Find(_first->str)->first = 
+			//vars.Find(_first->str)->second = true;
 
 			Run(_first->next->next, tags, vars);
 			return;
@@ -771,8 +774,11 @@ void Compiler::Run(Part* _first, TAGMAP tags, TableHash& vars)
 
 			for (auto it = newVarNames.begin(); it != newVarNames.end(); it++)
 			{
-				vars.Find(*it)->first = Var::CreateVarByType(varsType);
-				vars.Find(*it)->second = false;
+				Var* tmp = Var::CreateVarByType(varsType);
+				std::pair<Var*, bool> p = std::make_pair(tmp, false);
+				vars.Insert(*it, p);
+				//vars.Find(*it)->first = Var::CreateVarByType(varsType);
+				//vars.Find(*it)->second = false;
 			}
 
 			Run(curr->next->next, tags, vars);
