@@ -135,7 +135,7 @@ bool Postfix::CheckOnCorrect(std::list<std::string> prefix)
 	auto itNext = it;
 	++itNext;
 	auto itPrev = it;
-	if (IsOperator(*it) && *it != "+" && *it != "-") 
+	if (IsOperator(*it) && *it != "+" && *it != "-" && *it!="not") 
 		return false;
 	if (!BalanceBracket(prefix))
 		return false;
@@ -154,7 +154,7 @@ bool Postfix::CheckOnCorrect(std::list<std::string> prefix)
 		}
 		if (*it == ")")
 		{
-			if (!IsOperator(*itNext) && *itNext != ")")
+			if (!IsOperator(*itNext) && *itNext != ")" && *itNext!="not")
 				return false;
 			else if (IsOperator(*itPrev))
 				return false;
@@ -386,7 +386,7 @@ Var::_Type Postfix::CheckOnCompile(Part* start, Part* end, std::map<std::string,
 				tmpOperand.pop();
 				Oper2find = true;
 			}
-			if (!tmpOperand.empty())
+			if (!tmpOperand.empty() || *it == "not")
 			{
 				if (*it != "not")
 				{
@@ -475,7 +475,7 @@ Var* Postfix::Calculate(Part* start, Part* end, TableHash& vars)
 				tmpOperand.pop();
 				Oper2find = true;
 			}
-			if (!tmpOperand.empty())
+			if (!tmpOperand.empty() || *it == "not")
 			{
 				if (*it != "not")
 				{
@@ -541,11 +541,11 @@ Var* Postfix::Calculate(Part* start, Part* end, TableHash& vars)
 			}
 			else if (*it == "mod")
 			{
-				tmp = *Oper1 / Oper2;
+				tmp = *Oper1 % Oper2;
 			}
 			else if (*it == "div")
 			{
-				tmp = *Oper1 % Oper2;
+				tmp = dynamic_cast<_Int*>(Oper1)->Div(Oper2);
 			}
 			toDelete.push_back(tmp);
 			tmpOperand.push(tmp);

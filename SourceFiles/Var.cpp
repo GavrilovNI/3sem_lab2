@@ -1,5 +1,4 @@
 #include "..\HeaderFiles\Var.h"
-#include "..\HeaderFiles\CompilerExceptions.h"
 
 using namespace std;
 
@@ -196,7 +195,7 @@ Var* _Int::operator/ (Var* v)
 	{
 		if (static_cast<_Int*>(v)->value == 0)
 			throw CompilerExc("Zero division error");
-		return new _Int(value / static_cast<_Int*>(v)->value);
+		return new _Double((double)value / static_cast<_Int*>(v)->value);
 	}
 	else if (v->GetType() == _Type::_double)
 	{

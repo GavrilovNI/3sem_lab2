@@ -80,7 +80,7 @@ TEST(Var, operator_div_works_properly)
 	Var* v1, * v2, * v3;
 	v1 = Var::Assign("13");
 	v2 = Var::Assign("52");
-	ASSERT_NO_THROW(v3 = *v1 / v2);
+	ASSERT_NO_THROW(v3 = dynamic_cast<_Int*>(v1)->Div(v2));
 	ASSERT_TRUE(dynamic_cast<_Int*>(v3)->value == 0);
 }
 

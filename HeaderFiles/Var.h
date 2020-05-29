@@ -2,7 +2,7 @@
 #include <string>
 #include <ostream>
 #include <sstream>
-
+#include "CompilerExceptions.h"
 
 class Var
 {
@@ -73,6 +73,18 @@ public:
 	Var* operator>= (Var* v) override;
 	Var* operator= (Var* v) override;
 
+	//when use div
+	Var* Div(Var* v)
+	{
+		if (v->GetType() == _Type::_int)
+		{
+			if (static_cast<_Int*>(v)->value == 0)
+				throw CompilerExc("Zero division error");
+			return new _Int(value / static_cast<_Int*>(v)->value);
+		}
+		else
+			throw CompilerExc("Incompatible types");
+	}
 
 	explicit operator int() const
 	{
