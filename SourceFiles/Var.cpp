@@ -10,7 +10,7 @@ bool Var::CanCast(_Type from, _Type to)
 	return ((from == Var::_Type::_int && to == Var::_Type::_double) || (from == to));
 }
 
-void Var::Cast(Var* from, Var* to)
+void Var::Cast(Var* to, Var* from)
 {
 	switch (from->_type)
 	{
@@ -18,10 +18,10 @@ void Var::Cast(Var* from, Var* to)
 		switch (to->_type)
 		{
 		case _Type::_int:
-			static_cast<_Int*>(from)->value = static_cast<_Int*>(to)->value;
+			static_cast<_Int*>(to)->value = static_cast<_Int*>(from)->value;
 			break;
 		case _Type::_double:
-			static_cast<_Int*>(from)->value = static_cast<_Double*>(to)->value;
+			static_cast<_Double*>(to)->value = static_cast<_Int*>(from)->value;
 			break;
 		default:
 			throw "Error";
@@ -29,19 +29,19 @@ void Var::Cast(Var* from, Var* to)
 		break;
 	case _Type::_double:
 		if (to->_type == _Type::_double)
-			static_cast<_Double*>(from)->value = static_cast<_Double*>(to)->value;
+			static_cast<_Double*>(to)->value = static_cast<_Double*>(from)->value;
 		else
 			throw "Error";
 		break;
 	case _Type::_bool:
 		if (to->_type == _Type::_bool)
-			static_cast<_Bool*>(from)->value = static_cast<_Bool*>(to)->value;
+			static_cast<_Bool*>(to)->value = static_cast<_Bool*>(from)->value;
 		else
 			throw "Error";
 		break;
 	case _Type::_string:
-		if (to->_type == _Type::_double)
-			static_cast<_String*>(from)->value = static_cast<_String*>(to)->value;
+		if (to->_type == _Type::_string)
+			static_cast<_String*>(to)->value = static_cast<_String*>(from)->value;
 		else
 			throw "Error";
 		break;

@@ -75,12 +75,12 @@ TEST(Postfix, error_if_uncorrect_cast_types)
 	ASSERT_ANY_THROW(Postfix::CheckOnCompile(p->nextInside, p->next, vars));
 }
 
-TEST(Postfix, error_if_int_divisible_on_int)
+TEST(Postfix, no_error_if_int_divisible_on_int)
 {
 	std::string str = "program xs; const x = 5 / 3 + 4; begin end.";
 	Part* p = CompilerUtility::SplitStr(str);
 	p = p->next->next->nextInside->next;
-	ASSERT_ANY_THROW(Postfix::CheckOnCompile(p->nextInside, p->next, vars));
+	ASSERT_NO_THROW(Postfix::CheckOnCompile(p->nextInside, p->next, vars));
 }
 
 TEST(Postfix, can_compile_expression)

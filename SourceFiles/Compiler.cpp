@@ -158,9 +158,25 @@ Part* CompilerUtility::SplitStr(std::string str)
 
 bool CompilerUtility::IsEndWordFor(std::string start, std::string end, TAGMAP tags)
 {
-	if (GetTagState(tags, "equalParts"))
+	//std::string possibleEqualParts[]{ "then","else" };
+
+	if (GetTagState(tags, "equalParts")) // && std::find(std::begin(possibleEqualParts), std::end(possibleEqualParts), start)== std::end(possibleEqualParts)
 	{
-		return false;
+		if (start == "then" || start == "else")
+		{
+			if (end == ";")
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	if (start == "program")

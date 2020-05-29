@@ -35,8 +35,8 @@ TEST(Var, cast_works_properly)
 	Var *v1, *v2;
 	v1 = Var::Assign("25.4");
 	v2 = Var::Assign("2");
-	ASSERT_ANY_THROW(Var::Cast(v1, v2));
-	ASSERT_NO_THROW(Var::Cast(v2, v1));
+	ASSERT_NO_THROW(Var::Cast(v1, v2));
+	ASSERT_ANY_THROW(Var::Cast(v2, v1));
 }
 
 TEST(Var, operator_add_works_properly)

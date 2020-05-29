@@ -49,6 +49,7 @@
     <ClCompile Include="..\..\SourceFiles\Var.cpp" />
     <ClCompile Include="..\..\SourceFiles\Visual.cpp" />
     <ClCompile Include="..\..\Tests\Test_Compiler.cpp" />
+    <ClCompile Include="..\..\Tests\Test_Postfix.cpp" />
     <ClCompile Include="..\..\Tests\Test_Var.cpp" />
   </ItemGroup>
   <ItemDefinitionGroup />

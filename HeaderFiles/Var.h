@@ -16,7 +16,7 @@ public:
 
 	
 	static bool CanCast(_Type from, _Type to);
-	static void Cast(Var* from, Var* to);
+	static void Cast(Var* to, Var* from);
 	static Var* CreateCopy(Var* v);
 	static Var* Assign(std::string);
 	_Type GetType();
@@ -145,7 +145,10 @@ public:
 
 	std::string ToString() override
 	{
-		return std::to_string(value);
+		if (value)
+			return "true";
+		else
+			return "false";
 	}
 
 

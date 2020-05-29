@@ -33,6 +33,7 @@ TEST(Compiler, cant_compile_bad_simple_program)
 	ASSERT_ANY_THROW(c.Compile("program p"));
 	ASSERT_ANY_THROW(c.Compile("program ;"));
 	ASSERT_ANY_THROW(c.Compile("program"));
+	ASSERT_ANY_THROW(c.Compile("progtam p;"));
 }
 
 TEST(Compiler, can_compile_program_body)
@@ -444,4 +445,301 @@ TEST(Compiler, test_function_readln)
 	std::cin.rdbuf(backupCIN);
 	std::cout.rdbuf(backupCOUT);
 	ASSERT_EQ(ncout.str(), "\n\n1213");
+}
+
+TEST(Compiler, if_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then write('1'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if true then begin write('2'); end; end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "2");
+
+	geek.str("");
+	c.Compile("begin if false then write('3'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+	geek.str("");
+	c.Compile("begin if false then begin write('4'); end; end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+}
+
+TEST(Compiler, else_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then write('1') else write('2'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then write('3') else write('4'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "4");
+
+	
+	geek.str("");
+	c.Compile("begin if true then write('5') else begin write('6'); end; end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "5");
+
+	geek.str("");
+	c.Compile("begin if false then write('7') else begin write('8'); end; end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "8");
+
+}
+
+
+TEST(Compiler, else_if_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then write('1') else if true then write('2'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then write('3') else if true then write('4'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "4");
+
+	geek.str("");
+	c.Compile("begin if true then write('5') else if false then write('6'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "5");
+
+	geek.str("");
+	c.Compile("begin if false then write('7') else if false then write('8'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+}
+
+
+TEST(Compiler, else_if_else_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then write('1') else if true then write('2') else write('3'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then write('4') else if true then write('5') else write('6'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "5");
+
+	geek.str("");
+	c.Compile("begin if false then write('7') else if false then write('8') else write('9'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "9");
+
+	geek.str("");
+	c.Compile("begin if true then write('q') else if false then write('w') else write('e'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "q");
+}
+
+TEST(Compiler, if_in_if_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then if true then write('1'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then if true then write('2'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+	geek.str("");
+	c.Compile("begin if true then if false then write('3'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+	geek.str("");
+	c.Compile("begin if false then if false then write('4'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+}
+
+TEST(Compiler, if_else_in_if_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then if true then write('1') else write('2'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then if true then write('3') else write('4'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+	geek.str("");
+	c.Compile("begin if true then if false then write('5') else write('6'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "6");
+
+	geek.str("");
+	c.Compile("begin if false then if false then write('7') else write('8'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "");
+
+}
+
+TEST(Compiler, if_else_in_if_else_works_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("begin if true then if true then write('1') else write('2') else write('3'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1");
+
+	geek.str("");
+	c.Compile("begin if false then if true then write('4') else write('5') else write('6'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "6");
+
+	geek.str("");
+	c.Compile("begin if true then if false then write('7') else write('8') else write('9'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "8");
+
+	geek.str("");
+	c.Compile("begin if false then if false then write('q') else write('w') else write('e'); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "e");
+
+}
+
+TEST(Compiler, vars_sets_right)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	c.Compile("var i:integer; d:double; b:boolean; s:string; begin i:=123; d:=1.5; b:=true; s:='asd'; write(i); write(d); write(b); write(s); end.");
+	std::cout.rdbuf(geek.rdbuf());
+	c.Run();
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1231.500trueasd");
+}
+
+TEST(Compiler, int_can_cast_to_double)
+{
+	Compiler c;
+
+	std::ostringstream geek;
+	std::streambuf* coutbuf = std::cout.rdbuf();
+
+	geek.str("");
+	ASSERT_NO_THROW(c.Compile("var d:double; i:integer; begin i:=1; d:=i; write(d); end."));
+	std::cout.rdbuf(geek.rdbuf());
+	ASSERT_NO_THROW(c.Run());
+	std::cout.rdbuf(coutbuf);
+	ASSERT_EQ(geek.str(), "1.000");
+}
+
+TEST(Compiler, cant_compile_if_double_casting_to_int)
+{
+	Compiler c;
+	ASSERT_ANY_THROW(c.Compile("var d:double; i:integer; begin d:=1.5; i:=d; write(i); end."));
 }
